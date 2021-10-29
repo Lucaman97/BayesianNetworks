@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 #include "Node.h"
 
 class Graph {
@@ -12,6 +13,7 @@ public:
     void create_edge(const std::string& from, const std::string& to);
     friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
 private:
+    //unordered_map = tabella_hash
     std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>> adj_list;
 };
 
