@@ -6,12 +6,14 @@
 #include <unordered_map>
 #include <memory>
 #include "Node.h"
+#include "tinyxml2.h"
 
 class Graph {
 public:
-    void create_node(const std::string& name); // it will also need the probabilities
+    explicit Graph(const std::string& filename);
+    void create_node(const std::string& name, const std::shared_ptr<Node>& cpt); // it will also need the probabilities
     void create_edge(const std::string& from, const std::string& to);
-    // capire perché serve friend se la funzione è dentro la classe
+    std::shared_ptr<Node> getNode(const std::string& name);
     friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
 private:
     //unordered_map = tabella_hash

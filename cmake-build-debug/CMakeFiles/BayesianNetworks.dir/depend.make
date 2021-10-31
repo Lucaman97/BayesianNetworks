@@ -11,6 +11,7 @@ CMakeFiles\BayesianNetworks.dir\bayesian_network\Edge.cpp.obj: ..\bayesian_netwo
 CMakeFiles\BayesianNetworks.dir\bayesian_network\Graph.cpp.obj: ..\bayesian_network\Graph.cpp
 CMakeFiles\BayesianNetworks.dir\bayesian_network\Graph.cpp.obj: ..\bayesian_network\Graph.h
 CMakeFiles\BayesianNetworks.dir\bayesian_network\Graph.cpp.obj: ..\bayesian_network\Node.h
+CMakeFiles\BayesianNetworks.dir\bayesian_network\Graph.cpp.obj: ..\bayesian_network\tinyxml2.h
 
 CMakeFiles\BayesianNetworks.dir\bayesian_network\Node.cpp.obj: ..\bayesian_network\Node.cpp
 CMakeFiles\BayesianNetworks.dir\bayesian_network\Node.cpp.obj: ..\bayesian_network\Node.h
@@ -19,6 +20,7 @@ CMakeFiles\BayesianNetworks.dir\bayesian_network\main.cpp.obj: ..\bayesian_netwo
 CMakeFiles\BayesianNetworks.dir\bayesian_network\main.cpp.obj: ..\bayesian_network\Graph.h
 CMakeFiles\BayesianNetworks.dir\bayesian_network\main.cpp.obj: ..\bayesian_network\Node.h
 CMakeFiles\BayesianNetworks.dir\bayesian_network\main.cpp.obj: ..\bayesian_network\main.cpp
+CMakeFiles\BayesianNetworks.dir\bayesian_network\main.cpp.obj: ..\bayesian_network\tinyxml2.h
 
 CMakeFiles\BayesianNetworks.dir\bayesian_network\tinyxml2.cpp.obj: ..\bayesian_network\tinyxml2.cpp
 CMakeFiles\BayesianNetworks.dir\bayesian_network\tinyxml2.cpp.obj: ..\bayesian_network\tinyxml2.h

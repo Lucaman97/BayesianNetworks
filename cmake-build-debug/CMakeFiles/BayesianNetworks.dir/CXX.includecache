@@ -6,36 +6,8 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/CPTable.cpp
-iostream
--
-fstream
--
-CPTable.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
-tinyxml2.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
-
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
 vector
--
-
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Edge.cpp
-Edge.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Edge.h
-
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Edge.h
-iostream
--
-utility
--
-
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Graph.cpp
-Graph.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
-iostream
--
-string
 -
 
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
@@ -49,15 +21,15 @@ memory
 -
 Node.h
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Node.h
-
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Node.cpp
-Node.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Node.h
+tinyxml2.h
+C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
 
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Node.h
 iostream
 -
 utility
+-
+vector
 -
 
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/main.cpp
@@ -67,19 +39,7 @@ Graph.h
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
 CPTable.h
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
-
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.cpp
-tinyxml2.h
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
-new
--
-stddef.h
--
-stdarg.h
--
-cstddef
--
-cstdarg
+string
 -
 
 C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
