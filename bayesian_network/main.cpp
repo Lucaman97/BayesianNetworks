@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Graph.h"
+#include "CPTable.h"
 
 int main() {
     Graph network;
@@ -11,6 +12,8 @@ int main() {
     network.create_edge("Racoon", "Dog");
 
     std::cout << network << '\n';
+
+    CPTable gigio("Coma.xdsl");
 
     return 0;
 }

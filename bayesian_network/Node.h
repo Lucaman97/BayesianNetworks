@@ -7,8 +7,9 @@
 // this class will contain a CPT
 class Node {
 public:
-    explicit Node(std::string name) : name(std::move(name)) {};
+    Node(std::string name) : name(std::move(name)) {};
     std::string getName() const;
+
 private:
     std::string name;
 };
