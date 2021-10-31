@@ -14,7 +14,6 @@ int main() {
     std::cout << network << '\n';
 
     CPTable gigio("Coma.xdsl");
-
     return 0;
 }
 
