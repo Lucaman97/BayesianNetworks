@@ -7,7 +7,12 @@
 
 #include <vector>
 
-class CPTable {
+/*
+ *
+ * La cpTable avrà m^(n+1) elementi, con m che è il numero di state (present, absent) e
+ * n che è il numero di parents.
+*/
+ class CPTable {
 public:
     CPTable();
 

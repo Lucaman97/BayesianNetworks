@@ -9,11 +9,13 @@ CMakeFiles/BayesianNetworks.dir/bayesian_network/Edge.cpp.obj
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Edge.cpp
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Edge.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/Graph.cpp.obj
+ C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Graph.cpp
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Node.h
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/Node.cpp.obj
+ C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Node.cpp
  C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Node.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/main.cpp.obj

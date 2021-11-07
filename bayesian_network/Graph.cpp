@@ -2,7 +2,20 @@
 #include "tinyxml2.h"
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <vector>
 
+std::vector<std::string> Graph::tokenize(std::string const &str, const char delim) {
+    std::vector<std::string> out = {};
+    // construct a stream from the string
+    std::stringstream ss(str);
+
+    std::string s;
+    while (std::getline(ss, s, delim)) {
+        out.push_back(s);
+    }
+    return out;
+}
 
 Graph::Graph(const std::string &xdsl){
     //Aprire il file xdsl e parsarne il contenuto
@@ -23,42 +36,49 @@ Graph::Graph(const std::string &xdsl){
         if (err_id != 0) {
             throw err_id;
         }
-        tinyxml2::XMLElement *entry = docHandle.FirstChildElement("smile").FirstChildElement("nodes").ToElement();
-
-
-        const char *id;
-
-        //doc.FirstChildElement("smile")->FirstChildElement("nodes" )->FirstChildElement("cpt" )->QueryStringAttribute("id", &id);
-
+        tinyxml2::XMLNode *root = docHandle.FirstChildElement("smile").FirstChildElement("nodes").ToNode();
 
         //Itero sui nodi "cpt"
-        for(tinyxml2::XMLNode *node = entry->FirstChildElement("cpt"); node; node = node->NextSibling()) {
+        for(tinyxml2::XMLNode *node = root->FirstChildElement("cpt"); node; node = node->NextSibling()) {
 
             std::string cptId = node->ToElement()->Attribute("id");
-            std::cout<<cptId<<std::endl;
+
 
             //Aggiungo il nodo al grafo
             create_node(cptId.c_str());
 
             //Itero sui sottonodi "state"
-            //scrivere meglio il secondo elemento nell'inizializzazione del loop
-            for(tinyxml2::XMLNode *subNode = node->FirstChildElement("state"); subNode->ToElement()->Attribute("id"); subNode= subNode->NextSibling()) {
-                std::string cptId = subNode->ToElement()->Attribute("id");
-                std::cout<<cptId<<std::endl;
+            tinyxml2::XMLNode *state = node->FirstChildElement("state");
+            for(; state != nullptr; state=state->NextSiblingElement("state")) {
+                std::string stateId = state->ToElement()->Attribute("id");
+
+
+                }
+
+            //seleziono i nodi parenti
+            tinyxml2::XMLElement *parents = node->FirstChildElement("parents");
+            if(parents != nullptr){
+                //Ogni ramo può avere più di un parente, itero su di essi
+                for (std::string n: tokenize(parents->GetText(), ' ')) {
+                    create_edge(n, cptId);
+                }
             }
 
-            //create_edge();
 
-            /*
-            const char *name = e->Attribute("name");
-            if(name) std::cout<<name<<": ";
+            tinyxml2::XMLElement *probs = node->FirstChildElement("probabilities");
+            if(probs != nullptr) {
+                //itero sulle probabilità
+                for (std::string n: tokenize(probs->GetText(), ' ')) {
+                    //aggiungere a cptable
+                }
+            }
 
-            std::cout<<e->GetText();
 
-            int true_age = e->IntAttribute("age") + 50;
+            //auto lmao = root->FirstChildElement("probabilities")->ToElement()->GetText();
 
-            std::cout<<" "<<true_age <<std::endl;
-             */
+/*
+
+            °*/
         }
 
     } catch (tinyxml2::XMLError err) { // catch error when loading the xdsl file

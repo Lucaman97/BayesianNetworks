@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
+vector
+-
+
 C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Graph.cpp
 Graph.h
 C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
@@ -14,6 +18,10 @@ C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Pro
 iostream
 -
 string
+-
+sstream
+-
+vector
 -
 
 C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/Graph.h
@@ -33,6 +41,8 @@ iostream
 -
 utility
 -
+CPTable.h
+C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/CPTable.h
 
 C:/Users/lmann/Documents/Universita/Magistrale/Esami/ProgrammazioneDiSistema/Progetto/BayesianNetworks/bayesian_network/tinyxml2.h
 ctype.h

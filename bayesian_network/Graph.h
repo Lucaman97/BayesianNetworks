@@ -29,6 +29,7 @@ private:
     //unordered_map = tabella_hash
     //
     std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>> adj_list;
+    std::vector<std::string> tokenize(std::string const &str, const char delim);
 };
 
 

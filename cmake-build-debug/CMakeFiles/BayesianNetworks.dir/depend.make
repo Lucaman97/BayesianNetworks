@@ -9,11 +9,13 @@ CMakeFiles/BayesianNetworks.dir/bayesian_network/Edge.cpp.obj: \
  ../bayesian_network/Edge.cpp \
  ../bayesian_network/Edge.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/Graph.cpp.obj: \
+ ../bayesian_network/CPTable.h \
  ../bayesian_network/Graph.cpp \
  ../bayesian_network/Graph.h \
  ../bayesian_network/Node.h \
  ../bayesian_network/tinyxml2.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/Node.cpp.obj: \
+ ../bayesian_network/CPTable.h \
  ../bayesian_network/Node.cpp \
  ../bayesian_network/Node.h
 CMakeFiles/BayesianNetworks.dir/bayesian_network/main.cpp.obj: \
