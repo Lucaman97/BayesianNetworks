@@ -3,7 +3,8 @@
 #include "CPTable.h"
 
 int main() {
-    Graph network;
+
+    Graph network("Coma.xdsl");
     network.create_node("Burglar");
     network.create_node("Racoon");
     network.create_node("Dog");
@@ -13,7 +14,7 @@ int main() {
 
     std::cout << network << '\n';
 
-    CPTable gigio("Coma.xdsl");
+    //CPTable gigio("Coma.xdsl");
     return 0;
 }
 

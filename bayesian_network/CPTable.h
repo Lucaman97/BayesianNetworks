@@ -9,8 +9,9 @@
 
 class CPTable {
 public:
-    //Eliminare il costruttore in base a quello che si decide di utilizzare
-    CPTable(const std::string& gino);
+    CPTable();
+
+//Eliminare il costruttore in base a quello che si decide di utilizzare
     std::vector<std::vector<float>> getTable();
 
 private:
