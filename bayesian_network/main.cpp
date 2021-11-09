@@ -16,23 +16,33 @@ int main() {
 
     //CPTable gigio("Coma.xdsl");
 
-    Graph network("Coma.xdsl");
-    std::cout << network << '\n';
+    Graph network("Credit.xdsl");
+    //std::cout << network;
 
-    // just debugging
-    std::vector<float> probs =  network.getNode("BrainTumor")->getProbabilities();
-    std::cout << "Probabilities of BrainTumor: ";
-    for (float p : probs) {
-        std::cout << p << " ";
+    /*
+    int num_samples = 10000;
+    float p = 0;
+    for (int i = 0; i < num_samples; i++) {
+        std::unordered_map<std::string,std::string> sample = network.prior_sample();
+        if (sample["Worth"] == "Low")
+            p++;
     }
-    std::cout << "\n";
+    p /= (float)num_samples;
+    std::cout << p << "\n";
+    */
 
-    std::vector<std::string> parents = network.getNode("Coma")->getParents();
-    std::cout << "Parents of Coma: ";
-    for (const std::string& p : parents) {
-        std::cout << p << " ";
-    }
-    std::cout << "\n";
+    int num_samples = 1000; // try low number of samples to see the benefits of likelihood_weighting over rejection_sampling
+    // how to write a query (scrivi solo la roba dentro le parentesi) -> P(MetastCancer|Coma=present,IncrSerCal=absent)
+    std::string query = "Profession|CreditWorthiness=Negative";
+    std::vector<float> posteriors = network.likelihood_weighting(query, num_samples); // try to change 'likelihood_weighting' with 'rejection_sampling'
+
+    for (float & posterior : posteriors)
+        posterior = round(posterior * 100.0)/100.0; // arrotonda a due cifre dopo la virgola
+
+    std::cout << "P(" << query << ") = <";
+    for (int i = 0; i < posteriors.size()-1; i++)
+        std::cout << posteriors[i] << ",";
+    std::cout << posteriors[posteriors.size()-1] << ">\n";
     return 0;
 }
 

@@ -4,21 +4,24 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 // this class will contain a CPT
 class Node {
 public:
-    explicit Node(std::string name, std::vector<std::string> states, std::vector<float> probabilities, std::vector<std::string> parents) :
-        name(std::move(name)), states(std::move(states)), probabilities(std::move(probabilities)), parents(std::move(parents)) {};
+    explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map, std::vector<std::vector<float>> probabilities, std::vector<std::string> parents) :
+    name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)), probabilities(std::move(probabilities)), parents(std::move(parents)) {};
     std::string getName() const;
+    std::unordered_map<std::string, int> getStatesMap() const;
     std::vector<std::string> getStates() const;
-    std::vector<float> getProbabilities() const;
+    std::vector<std::vector<float>> getProbabilities() const;
     std::vector<std::string> getParents() const;
 private:
     std::string name;
+    // I assume that the number of states of a node is not very large (I could use a map or only a vector, but it would be slower)
+    std::unordered_map<std::string,int> states_map; // state,index
     std::vector<std::string> states;
-    std::vector<float> probabilities;
-    //std::vector<std::shared_ptr<Node>> parents; // oppure weak_ptr, ancora non so se un riferimento al padre potrà tornare utile
+    std::vector<std::vector<float>> probabilities;
     std::vector<std::string> parents;
 };
 
