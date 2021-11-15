@@ -3,6 +3,9 @@
 #include "CPTable.h"
 #include <string>
 
+#include "hashLibrary/sha1.h"
+
+
 int main() {
     /*
     Graph network;
@@ -43,6 +46,16 @@ int main() {
     for (int i = 0; i < posteriors.size()-1; i++)
         std::cout << posteriors[i] << ",";
     std::cout << posteriors[posteriors.size()-1] << ">\n";
+
+        Chocobo1::SHA1 sha1;
+
+
+        sha1.addData("porcodio").finalize();
+
+
+
+        std::string result = sha1.toString();
+        std::cout<<std::endl<<result;
     return 0;
 }
 
