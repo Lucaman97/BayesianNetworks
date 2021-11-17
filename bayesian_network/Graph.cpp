@@ -3,9 +3,15 @@
 #include <string>
 #include <sstream>
 #include <random>
-#include <unordered_set>
+#include "hashLibrary/sha1.h"
+#include "Node.h"
 
-Graph::Graph(const std::string &filename) {
+//Define the static member
+std::unordered_map<std::string, std::vector<std::vector<float>>> Node::probs_hashmap;
+
+Graph::Graph(const std::string &filename)
+{
+
     tinyxml2::XMLDocument doc;
     try {
         tinyxml2::XMLError err_id = doc.LoadFile(("../bayesian_network/" + filename).c_str());
@@ -18,14 +24,17 @@ Graph::Graph(const std::string &filename) {
         std::unordered_map<std::string, int> parent_nstates; // useful to load the cpt, because the number of columns of every cpt is equal to the product of the number of states of the parents
 
         // iterate over all the 'cpt' xml tags
-        for (tinyxml2::XMLElement* e = root->FirstChildElement("cpt" ); e != nullptr; e = e->NextSiblingElement("cpt")) {
+        for (tinyxml2::XMLElement* e = root->FirstChildElement("cpt" ); e != nullptr; e = e->NextSiblingElement("cpt"))
+        {
             const char* node_id;
             e->QueryStringAttribute("id", &node_id);
 
             // iterate over all states
             std::unordered_map<std::string, int> states_map;
             std::vector<std::string> states;
+
             int state_counter = 0;
+
             for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state")) {
                 const char* state_id;
                 state->QueryStringAttribute("id", &state_id);
@@ -38,6 +47,7 @@ Graph::Graph(const std::string &filename) {
             // save the parents
             std::vector<std::string> parents;
             int n_cols = 1;
+
             if (e->FirstChildElement("parents") != nullptr) {
                 const char* parentlist = e->FirstChildElement("parents")->GetText();
                 // metodo veloce trovato online per iterare le parole di una stringa
@@ -51,21 +61,56 @@ Graph::Graph(const std::string &filename) {
 
             // save the probabilities
             std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
+
+
             if (e->FirstChildElement("probabilities") != nullptr) {
-                const char* problist = e->FirstChildElement("probabilities")->GetText();
+                std::string problist = e->FirstChildElement("probabilities")->GetText();
+
+                auto p = problist.c_str();
+                //std::cout<<problist<<std::endl;
+                //Chocobo1::SHA1 hash;
+                //hash.addData(problist.c_str(), 1);
+                //std::cout<<hash.finalize().toString()<<std::endl;
                 std::istringstream ss(problist);
                 std::string prob;
                 int i = 0;
                 int n_states = 0;
-                while (ss >> prob) {
-                    probabilities[i].push_back(std::stof(prob));
-                    n_states++;
-                    if (n_states == state_counter) {
-                        n_states = 0;
-                        i++;
+
+                //if hash(probabilities) is not in probs_hashmap, then add it,
+                // else make the probabilities pointer point the one already existing
+                Chocobo1::SHA1 hash;
+                hash.addData(problist.c_str(), problist.size());
+
+
+                    while (ss >> prob)
+                    {
+                        //If the hashmap does not contain the node, then:
+                        if(Node::probs_hashmap.find(node_id) == Node::probs_hashmap.end())
+                        {
+                            //let's add the probabilities to the hashmap: the hashed probabilities are the key.
+                            // 'i' is the vector index
+                            Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
+
+                        }
+                        else
+                        {
+
+                        }
+
+                        //let's point the pointer (probabilities) to the (now) existing
+                        probabilities = Node::probs_hashmap[node_id];
+                        //probabilities[i].push_back(std::stof(prob));
+                        n_states++;
+                        if (n_states == state_counter)
+                        {
+                            n_states = 0;
+                            i++;
+                        }
                     }
-                }
+
             }
+
+
             cpt_list.push_back(std::make_shared<Node>(node_id, states, states_map, probabilities, parents));
             cpt_indexes[node_id] = (int)cpt_list.size() - 1;
             /*

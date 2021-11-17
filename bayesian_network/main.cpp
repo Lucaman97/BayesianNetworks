@@ -2,8 +2,7 @@
 #include "Graph.h"
 #include "CPTable.h"
 #include <string>
-
-#include "hashLibrary/sha1.h"
+//#include "hashLibrary/sha1.h"
 
 
 int main() {
@@ -19,7 +18,7 @@ int main() {
 
     //CPTable gigio("Coma.xdsl");
 
-    Graph network("Credit.xdsl");
+    Graph network("Coma.xdsl");
     //std::cout << network;
 
     /*
@@ -47,15 +46,23 @@ int main() {
         std::cout << posteriors[i] << ",";
     std::cout << posteriors[posteriors.size()-1] << ">\n";
 
+
+
+/*
+// If you are using C++14 or C++17, don't forget the "gsl" folder!
+
+        // Get an instance
         Chocobo1::SHA1 sha1;
 
+        // Feed data & data length to it
+        sha1.addData("hello");
 
-        sha1.addData("porcodio").finalize();
 
-
+        sha1.finalize();
 
         std::string result = sha1.toString();
-        std::cout<<std::endl<<result;
+        std::cout<<std::endl<<result; */
+
     return 0;
 }
 

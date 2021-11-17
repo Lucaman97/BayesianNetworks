@@ -21,7 +21,7 @@ public:
     std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
     std::vector<float> rejection_sampling(const std::string& query, int num_samples);
     std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
-
+    static std::unordered_map<std::string, std::vector<std::vector<float>>> probs_hashmap;
 private:
     //unordered_map = tabella_hash
     //std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>> adj_list;
