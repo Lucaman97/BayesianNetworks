@@ -19,6 +19,7 @@ public:
     std::vector<std::string> getStates() const;
     std::vector<std::vector<float>> getProbabilities() const;
     std::vector<std::string> getParents() const;
+
     static std::unordered_map<std::string, std::vector<std::vector<float>>> probs_hashmap;
 
 private:

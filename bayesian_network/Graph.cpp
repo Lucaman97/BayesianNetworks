@@ -35,7 +35,9 @@ Graph::Graph(const std::string &filename)
 
             int state_counter = 0;
 
-            for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state")) {
+            //Iterate over states
+            for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
+            {
                 const char* state_id;
                 state->QueryStringAttribute("id", &state_id);
                 states_map[state_id] = state_counter;
@@ -48,6 +50,7 @@ Graph::Graph(const std::string &filename)
             std::vector<std::string> parents;
             int n_cols = 1;
 
+            //get the node parents
             if (e->FirstChildElement("parents") != nullptr) {
                 const char* parentlist = e->FirstChildElement("parents")->GetText();
                 // metodo veloce trovato online per iterare le parole di una stringa
@@ -61,12 +64,9 @@ Graph::Graph(const std::string &filename)
 
             // save the probabilities
             std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
-
-
             if (e->FirstChildElement("probabilities") != nullptr) {
                 std::string problist = e->FirstChildElement("probabilities")->GetText();
 
-                auto p = problist.c_str();
                 //std::cout<<problist<<std::endl;
                 //Chocobo1::SHA1 hash;
                 //hash.addData(problist.c_str(), 1);
@@ -78,35 +78,49 @@ Graph::Graph(const std::string &filename)
 
                 //if hash(probabilities) is not in probs_hashmap, then add it,
                 // else make the probabilities pointer point the one already existing
+
                 Chocobo1::SHA1 hash;
-                hash.addData(problist.c_str(), problist.size());
+                hash.addData(problist.c_str(), problist.size()).finalize();
+
+                std::string hashedCPT = hash.toString();
 
 
+
+
+
+                //If the hashmap does not contain the node, then:
+                if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+                {
+                    std::vector<float> firstLayerVec;
+                    std::vector<std::vector<float>> secondLayerVec;
+                    //Node::probs_hashmap[hash.toString()].push_back(firstLayerVec);
                     while (ss >> prob)
                     {
-                        //If the hashmap does not contain the node, then:
-                        if(Node::probs_hashmap.find(node_id) == Node::probs_hashmap.end())
-                        {
                             //let's add the probabilities to the hashmap: the hashed probabilities are the key.
                             // 'i' is the vector index
-                            Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
 
-                        }
-                        else
-                        {
+                        firstLayerVec.push_back(std::stof(prob));
 
-                        }
+                            //Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
 
-                        //let's point the pointer (probabilities) to the (now) existing
-                        probabilities = Node::probs_hashmap[node_id];
+
+
                         //probabilities[i].push_back(std::stof(prob));
                         n_states++;
                         if (n_states == state_counter)
                         {
+                            secondLayerVec.emplace_back(firstLayerVec);
+                            std::vector<float> firstLayerVec;
                             n_states = 0;
                             i++;
+                            //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
                         }
                     }
+                    Node::probs_hashmap[hashedCPT] = secondLayerVec;
+
+                    //let's make the pointer (probabilities) point to the existing cpt
+                    probabilities = Node::probs_hashmap[hashedCPT];
+                }
 
             }
 
