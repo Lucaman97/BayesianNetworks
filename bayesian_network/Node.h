@@ -11,7 +11,7 @@
 class Node {
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-                  std::vector<std::vector<float>> probabilities, std::vector<std::string> parents);
+                  const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents);
     //: name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
     // probabilities(std::move(probabilities)), parents(std::move(parents)) {};
     std::string getName() const;

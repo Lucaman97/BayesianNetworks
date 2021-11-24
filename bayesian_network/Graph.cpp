@@ -85,9 +85,6 @@ Graph::Graph(const std::string &filename)
                 std::string hashedCPT = hash.toString();
 
 
-
-
-
                 //If the hashmap does not contain the node, then:
                 if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
                 {
@@ -110,7 +107,8 @@ Graph::Graph(const std::string &filename)
                         if (n_states == state_counter)
                         {
                             secondLayerVec.emplace_back(firstLayerVec);
-                            std::vector<float> firstLayerVec;
+                            //std::vector<float> firstLayerVec;
+                            firstLayerVec.clear();
                             n_states = 0;
                             i++;
                             //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
@@ -118,12 +116,12 @@ Graph::Graph(const std::string &filename)
                     }
                     Node::probs_hashmap[hashedCPT] = secondLayerVec;
 
-                    //let's make the pointer (probabilities) point to the existing cpt
-                    probabilities = Node::probs_hashmap[hashedCPT];
+
                 }
+                //let's make the pointer (probabilities) point to the existing cpt
+                probabilities = Node::probs_hashmap[hashedCPT];
 
             }
-
 
             cpt_list.push_back(std::make_shared<Node>(node_id, states, states_map, probabilities, parents));
             cpt_indexes[node_id] = (int)cpt_list.size() - 1;
@@ -135,6 +133,18 @@ Graph::Graph(const std::string &filename)
             }
              */
         }
+
+        for (const std::shared_ptr<Node>& node : cpt_list) {
+            std::cout << node->getName() << "\n";
+            for (auto& v : node->getProbabilities()) {
+                for (auto& p : v) {
+                    std::cout << p << " ";
+                }
+                std::cout << "\n";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "\n";
 
         // in alcuni modelli ci sono nodi chiamati 'deterministic' oltre ai 'cpt' (Animals). Da gestire
 

@@ -22,12 +22,21 @@ std::vector<std::string> Node::getParents() const {
 }
 
 Node::Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-           std::vector<std::vector<float>> probabilities, std::vector<std::string> parents) :
+           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents) :
         name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
         parents(std::move(parents))
 {
     this->probabilities = std::make_shared<std::vector<std::vector<float>>>(probabilities);
-
+    /*
+    if (this->name == "Profession") {
+        for (auto& v : this->getProbabilities()) {
+            for (auto& p : v) {
+                std::cout << p << " ";
+            }
+            std::cout << "\n";
+        }
+    }
+    */
 }
 
 
