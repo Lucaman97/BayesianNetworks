@@ -3,8 +3,11 @@
 #include <string>
 #include <sstream>
 #include <random>
+#include <thread>
+#include <mutex>
 #include "hashLibrary/sha1.h"
 #include "Node.h"
+
 
 //Define the static member
 std::unordered_map<std::string, std::vector<std::vector<float>>> Node::probs_hashmap;
@@ -133,18 +136,6 @@ Graph::Graph(const std::string &filename)
             }
              */
         }
-
-        for (const std::shared_ptr<Node>& node : cpt_list) {
-            std::cout << node->getName() << "\n";
-            for (auto& v : node->getProbabilities()) {
-                for (auto& p : v) {
-                    std::cout << p << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "\n";
-        }
-        std::cout << "\n";
 
         // in alcuni modelli ci sono nodi chiamati 'deterministic' oltre ai 'cpt' (Animals). Da gestire
 
@@ -335,13 +326,42 @@ std::vector<float> Graph::likelihood_weighting(const std::string& query, int num
         evidence_states[tok[0]] = tok[1];
     }
 
+    /*
     for (int i = 0; i < num_samples; i++) {
         std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
         std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
         float w = std::get<1>(sample_weight);
 
         posteriors[cpt_list[cpt_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
+    }*/
+
+    int n_thread = (int)std::thread::hardware_concurrency() - 1;
+    std::mutex mtx;
+
+    auto t_fun = [&](){
+        while (true) {
+            std::unique_lock<std::mutex> lk(mtx); // Ho messo il lock per evitare che altri stiano generando samples quando num_samples diventa < 0
+            if (num_samples <= 0)
+                break;
+            std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
+            std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
+            float w = std::get<1>(sample_weight);
+
+            posteriors[cpt_list[cpt_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
+            num_samples--;
+        }
+    };
+
+    std::vector<std::thread> threads;
+    threads.reserve(n_thread);
+    for (int i = 0; i < n_thread; i++) {
+        threads.emplace_back(t_fun);
     }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+    //std::cout << num_samples << '\n';
 
     // normalize
     float sum = 0;
