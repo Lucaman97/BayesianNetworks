@@ -3,8 +3,7 @@
 #include <string>
 #include <sstream>
 #include <random>
-#include <thread>
-#include <mutex>
+#include <future>
 #include "hashLibrary/sha1.h"
 #include "Node.h"
 
@@ -326,7 +325,7 @@ std::vector<float> Graph::likelihood_weighting(const std::string& query, int num
         evidence_states[tok[0]] = tok[1];
     }
 
-    /*
+    /*// single thread version
     for (int i = 0; i < num_samples; i++) {
         std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
         std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
@@ -335,33 +334,36 @@ std::vector<float> Graph::likelihood_weighting(const std::string& query, int num
         posteriors[cpt_list[cpt_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
     }*/
 
-    int n_thread = (int)std::thread::hardware_concurrency() - 1;
-    std::mutex mtx;
+    int n_thread = 3;
+    //int n_thread = (int)std::thread::hardware_concurrency() - 1; // TO FIGURE OUT
+    int iterations = num_samples / n_thread;
+    int left = num_samples % n_thread;
 
-    auto t_fun = [&](){
-        while (true) {
-            std::unique_lock<std::mutex> lk(mtx); // Ho messo il lock per evitare che altri stiano generando samples quando num_samples diventa < 0
-            if (num_samples <= 0)
-                break;
+    auto t_fun = [&](int iterations) {
+        std::vector<float> local_posteriors(cpt_list[cpt_indexes[query_variable]]->getStates().size(),0);
+        for (int i = 0; i < iterations; i++) {
             std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
             std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
             float w = std::get<1>(sample_weight);
-
-            posteriors[cpt_list[cpt_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
-            num_samples--;
+            local_posteriors[cpt_list[cpt_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
         }
+        return local_posteriors;
     };
 
-    std::vector<std::thread> threads;
-    threads.reserve(n_thread);
+    std::vector<std::future<std::vector<float>>> t_results;
+    t_results.reserve(n_thread);
     for (int i = 0; i < n_thread; i++) {
-        threads.emplace_back(t_fun);
+        if (i == 0)
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+        else
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
     }
 
-    for (auto& t : threads) {
-        t.join();
+    for (auto& res : t_results) {
+        std::vector<float> loc_posteriors = res.get();
+        for (int i=0; i < posteriors.size(); i++)
+            posteriors[i] += loc_posteriors[i];
     }
-    //std::cout << num_samples << '\n';
 
     // normalize
     float sum = 0;

@@ -34,9 +34,10 @@ int main() {
     std::cout << p << "\n";
     */
     auto start = std::chrono::high_resolution_clock::now();
-    int num_samples = 10000; // try low number of samples to see the benefits of likelihood_weighting over rejection_sampling
+    int num_samples = 10000;
     // how to write a query (scrivi solo la roba dentro le parentesi) -> P(MetastCancer|Coma=present,IncrSerCal=absent)
     std::string query = "Profession|CreditWorthiness=Negative";
+    //std::string query = "ins_sens|glu_prod_16=x2_0mmol_kg_h";
     std::vector<float> posteriors = network.likelihood_weighting(query, num_samples); // try to change 'likelihood_weighting' with 'rejection_sampling'
 
     for (float & posterior : posteriors)
