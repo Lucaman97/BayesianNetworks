@@ -18,7 +18,6 @@ int main() {
     */
 
     //CPTable gigio("Coma.xdsl");
-
     Graph network("Credit.xdsl");
     //std::cout << network;
 
