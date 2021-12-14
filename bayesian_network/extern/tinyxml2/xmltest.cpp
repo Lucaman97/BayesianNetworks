@@ -13,7 +13,7 @@
 #if defined( _MSC_VER ) || defined (WIN32)
 	#include <crtdbg.h>
 	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
+	#include <Windows.h>
 	_CrtMemState startMemState;
 	_CrtMemState endMemState;
 #else

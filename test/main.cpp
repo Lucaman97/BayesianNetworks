@@ -1,6 +1,5 @@
 #include <iostream>
-#include "Graph.h"
-#include "CPTable.h"
+#include "src/Graph.h"
 #include <string>
 #include <chrono>
 //#include "hashLibrary/sha1.h"
@@ -17,7 +16,6 @@ int main() {
     network.create_edge("Racoon", "Dog");
     */
 
-    //CPTable gigio("Coma.xdsl");
     Graph network("Credit.xdsl");
     //std::cout << network;
 

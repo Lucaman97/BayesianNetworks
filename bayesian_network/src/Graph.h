@@ -7,7 +7,7 @@
 #include <memory>
 #include <random>
 #include "Node.h"
-#include "tinyxml2.h"
+#include "extern/tinyxml2/tinyxml2.h"
 
 class Graph {
 public:
