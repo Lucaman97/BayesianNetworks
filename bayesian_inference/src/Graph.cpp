@@ -1,22 +1,23 @@
-#include "Graph.h"
+#include "bayinf/Graph.h"
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <random>
 #include <future>
-#include "hashLibrary/sha1.h"
+#include "../extern/tinyxml2/tinyxml2.h"
+#include "../extern/hashLibrary/sha1.h"
 #include "Node.h"
 
 
 //Define the static member
 std::unordered_map<std::string, std::vector<std::vector<float>>> Node::probs_hashmap;
 
-Graph::Graph(const std::string &filename)
+bayinf::Graph::Graph(const std::string &filename)
 {
 
     tinyxml2::XMLDocument doc;
     try {
-        tinyxml2::XMLError err_id = doc.LoadFile(("../bayesian_network/" + filename).c_str());
+        tinyxml2::XMLError err_id = doc.LoadFile(("../../" + filename).c_str());
         if (err_id != 0) {
             throw err_id;
         }
@@ -152,7 +153,7 @@ void Graph::create_edge(const std::string &from, const std::string &to) {
     adj_list[from].push_back(adj_list[to].front());
 }
 */
-std::shared_ptr<Node> Graph::getNode(const std::string& name) {
+std::shared_ptr<Node> bayinf::Graph::getNode(const std::string& name) {
     for (const auto& node : cpt_list)
         if (node->getName() == name)
             return node;
@@ -179,7 +180,7 @@ std::ostream &operator<<(std::ostream &out, const Graph &graph) {
     return out;
 }*/
 
-std::unordered_map<std::string,std::string> Graph::prior_sample() {
+std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
     std::uniform_real_distribution<double> dis(0,1);
     std::unordered_map<std::string,std::string> sample;
 
@@ -214,7 +215,7 @@ std::unordered_map<std::string,std::string> Graph::prior_sample() {
     return sample;
 }
 
-std::tuple<std::unordered_map<std::string,std::string>, float> Graph::weighted_sample(const std::unordered_map<std::string, std::string>& evidence) {
+std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::weighted_sample(const std::unordered_map<std::string, std::string>& evidence) {
     std::uniform_real_distribution<double> dis(0,1);
     std::unordered_map<std::string,std::string> sample;
     float w = 1;
@@ -275,7 +276,7 @@ std::vector<std::string> split_string(const std::string& input, char delim) { //
     return tokens;
 }
 
-std::vector<float> Graph::rejection_sampling(const std::string& query, int num_samples) {
+std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, int num_samples) {
     std::vector<std::string> tokens = split_string(query, '|');
     std::string query_variable = tokens[0];
     std::vector<std::string> evidence_variables = split_string(tokens[1], ',');
@@ -307,13 +308,15 @@ std::vector<float> Graph::rejection_sampling(const std::string& query, int num_s
     float sum = 0;
     for (float posterior : posteriors)
         sum += posterior;
-    for (float & posterior : posteriors)
+    for (float & posterior : posteriors) {
         posterior /= sum;
+        posterior = round(posterior * 100.0)/100.0; // arrotonda a due cifre dopo la virgola
+    }
 
     return posteriors;
 }
 
-std::vector<float> Graph::likelihood_weighting(const std::string& query, int num_samples) {
+std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query, int num_samples) {
     std::vector<std::string> tokens = split_string(query, '|');
     std::string query_variable = tokens[0];
     std::vector<std::string> evidence_variables = split_string(tokens[1], ',');
@@ -369,8 +372,11 @@ std::vector<float> Graph::likelihood_weighting(const std::string& query, int num
     float sum = 0;
     for (float posterior : posteriors)
         sum += posterior;
-    for (float & posterior : posteriors)
+    for (float & posterior : posteriors) {
         posterior /= sum;
+        posterior = round(posterior * 100.0)/100.0; // arrotonda a due cifre dopo la virgola
+    }
 
     return posteriors;
 }
+

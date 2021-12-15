@@ -38,7 +38,7 @@
 #if (USE_STD_SPAN_CHOCOBO1_HASH == 1)
 #include <span>
 #else
-#include "extern/hashLibrary/gsl/span"
+#include "gsl/span"
 #endif
 
 
