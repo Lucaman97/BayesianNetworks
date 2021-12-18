@@ -5,13 +5,15 @@
 #include <vector>
 
 int main() {
-    bayinf::Graph network("data/Credit.xdsl");
+    bayinf::Graph network("data/Animals.xdsl");
 
     auto start = std::chrono::high_resolution_clock::now();
     int num_samples = 10000;
     // how to write a query (scrivi solo la roba dentro le parentesi) -> P(MetastCancer|Coma=present,IncrSerCal=absent)
-    std::string query = "Profession|CreditWorthiness=Negative";
-    //std::string query = "ins_sens|glu_prod_16=x2_0mmol_kg_h";
+    //std::string query = "Profession|CreditWorthiness=Negative"; // Credit
+    //std::string query = "ins_sens|glu_prod_16=x2_0mmol_kg_h"; // Diabetes
+    std::string query = "Animal|Environment=Land"; // Animals
+
     std::vector<float> posteriors = network.likelihood_weighting(query, num_samples); // try to change 'likelihood_weighting' with 'rejection_sampling'
 
     std::cout << "P(" << query << ") = <";
