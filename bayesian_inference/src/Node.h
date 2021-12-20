@@ -6,9 +6,10 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include "COWBase.h"
 
 // this class will contain a CPT
-class Node {
+class Node : COWBase<std::vector<std::vector<float>>>{
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
                   const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents);
@@ -29,7 +30,7 @@ private:
     std::vector<std::string> states;
     std::vector<std::string> parents;
 
-    std::shared_ptr<std::vector<std::vector<float>>> probabilities;
+    //std::shared_ptr<std::vector<std::vector<float>>> probabilities;
 
 
     //static std::unordered_map<std::string, std::string> probs_hashmap;

@@ -188,7 +188,7 @@ bayinf::Graph::Graph(const std::string &filename)
                 }
                 //let's make the pointer (probabilities) point to the existing cpt
                 probabilities = Node::probs_hashmap[hashedCPT];
-                cpt_list.push_back(std::make_shared<Node>(node_id, states, states_map, probabilities, parents));
+                cpt_list.emplace_back(std::make_shared<Node>(Node(node_id, states, states_map, probabilities, parents)));
                 cpt_indexes[node_id] = (int)cpt_list.size() - 1;
             }
         }

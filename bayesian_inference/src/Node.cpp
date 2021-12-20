@@ -14,7 +14,7 @@ std::vector<std::string> Node::getStates() const {
 }
 
 std::vector<std::vector<float>> Node::getProbabilities() const {
-    return *probabilities;
+    return *ptr();
 }
 
 std::vector<std::string> Node::getParents() const {
@@ -22,11 +22,15 @@ std::vector<std::string> Node::getParents() const {
 }
 
 Node::Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents) :
-        name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
-        parents(std::move(parents))
+           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents)
 {
-    this->probabilities = std::make_shared<std::vector<std::vector<float>>>(probabilities);
+    construct();
+    this->name = (std::move(name));
+    this->states = (std::move(states));
+    this->states_map = (std::move(states_map));
+    this->parents = (std::move(parents));
+    *ptr() = (probabilities);
+
     /*
     if (this->name == "Profession") {
         for (auto& v : this->getProbabilities()) {
@@ -38,5 +42,4 @@ Node::Node(std::string name, std::vector<std::string> states, std::unordered_map
     }
     */
 }
-
 
