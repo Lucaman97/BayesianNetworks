@@ -24,8 +24,8 @@ namespace bayinf {
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
         //unordered_map = tabella_hash
         //std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>> adj_list;
-        std::vector<std::shared_ptr<Node>> cpt_list;
-        std::unordered_map<std::string,int> cpt_indexes;
+        std::vector<std::shared_ptr<Node>> node_list;
+        std::unordered_map<std::string,int> node_indexes;
         std::default_random_engine gen; // random number generator
     };
 

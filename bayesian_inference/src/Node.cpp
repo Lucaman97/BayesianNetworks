@@ -1,5 +1,10 @@
-#include "Node.h"
+#ifndef BAYESIANNETWORKS_NODE
+#define BAYESIANNETWORKS_NODE
 
+#include <sstream>
+#include <sha1.h>
+#include "Node.h"
+//#include "../extern/hashLibrary/sha1.h"
 
 std::string Node::getName() const {
     return name;
@@ -14,7 +19,7 @@ std::vector<std::string> Node::getStates() const {
 }
 
 std::vector<std::vector<float>> Node::getProbabilities() const {
-    return *probabilities;
+    return *ptr();
 }
 
 std::vector<std::string> Node::getParents() const {
@@ -22,11 +27,15 @@ std::vector<std::string> Node::getParents() const {
 }
 
 Node::Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents) :
-        name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
-        parents(std::move(parents))
+           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states)
 {
-    this->probabilities = std::make_shared<std::vector<std::vector<float>>>(probabilities);
+    construct();
+    this->name = (std::move(name));
+    this->states = std::move(states);
+    this->states_map = (std::move(states_map));
+    this->parents = (std::move(parents));
+    this->n_states = (std::move(n_states));
+    *ptr() = (probabilities);
     /*
     if (this->name == "Profession") {
         for (auto& v : this->getProbabilities()) {
@@ -39,4 +48,52 @@ Node::Node(std::string name, std::vector<std::string> states, std::unordered_map
     */
 }
 
+void Node::setHashmapList(std::string newList) {
+
+    //if hash(probabilities) is not in probs_hashmap, then add it,
+    // else make the probabilities pointer point the one already existing
+
+    std::string hashedCPT = hashFun(newList);
+    std::istringstream ss(newList);
+    std::string prob;
+    int states_counter = 0;
+    //If the hashmap does not contain the node, then:
+    if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+    {
+        std::vector<float> firstLayerVec;
+        std::vector<std::vector<float>> secondLayerVec;
+        //Node::probs_hashmap[hash.toString()].push_back(firstLayerVec);
+        while (ss >> prob)
+        {
+            //let's add the probabilities to the hashmap: the hashed probabilities are the key.
+            // 'i' is the vector index
+
+            firstLayerVec.push_back(std::stof(prob));
+            //Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
+
+            //probabilities[i].push_back(std::stof(prob));
+            states_counter++;
+            if (states_counter == this->n_states)
+            {
+                secondLayerVec.emplace_back(firstLayerVec);
+                //std::vector<float> firstLayerVec;
+                firstLayerVec.clear();
+                states_counter = 0;
+                //  i++;
+                //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
+            }
+        }
+        Node::probs_hashmap[hashedCPT] = secondLayerVec;
+    }
+}
+
+std::string Node::hashFun(std::string raw) {
+
+    Chocobo1::SHA1 hash;
+    hash.addData(raw.c_str(), raw.size()).finalize();
+    return hash.toString();
+}
+
+
+#endif //BAYESIANNETWORKS_NODE
 
