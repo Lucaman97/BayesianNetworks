@@ -14,16 +14,13 @@ namespace bayinf {
     public:
         explicit Graph(const std::string& filename);
         //friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
-
+        void edit_cpt(const std::string& name, const std::string& problist); // problist is a list of probabilities separeted by a space
         std::vector<float> rejection_sampling(const std::string& query, int num_samples);
         std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
-
+        //void test(); // debug only
     private:
-        std::shared_ptr<Node> getNode(const std::string& name);
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
-        //unordered_map = tabella_hash
-        //std::unordered_map<std::string, std::vector<std::shared_ptr<Node>>> adj_list;
         std::vector<std::shared_ptr<Node>> node_list;
         std::unordered_map<std::string,int> node_indexes;
         std::default_random_engine gen; // random number generator

@@ -4,8 +4,7 @@
 #include <sstream>
 #include <random>
 #include <future>
-#include "../extern/tinyxml2/tinyxml2.h"
-//#include "../extern/hashLibrary/sha1.h"
+#include "tinyxml2.h"
 #include "Utils.h"
 
 
@@ -23,8 +22,6 @@ bayinf::Graph::Graph(const std::string &filename)
         }
 
         tinyxml2::XMLElement* root = doc.FirstChildElement("smile")->FirstChildElement("nodes" );
-
-        //std::unordered_map<std::string, int> parent_nstates; // useful to load the cpt, because the number of columns of every cpt is equal to the product of the number of states of the parents
 
         // iterate over all the 'cpt' xml tags
         for (tinyxml2::XMLElement* e = root->FirstChildElement("cpt" ); e != nullptr; e = e->NextSiblingElement("cpt")) {
@@ -101,20 +98,12 @@ bayinf::Graph::Graph(const std::string &filename)
                         }
                     }
                     Node::probs_hashmap[hashedCPT] = secondLayerVec;
-
-
                 }
                 Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
                 node_list.push_back(std::make_shared<Node>(node));
                 node_indexes[node_id] = (int)node_list.size() - 1;
             }
-            /*
-            create_node(node_id, std::make_shared<Node>(node_id, states, states_map, probabilities, parents));
 
-            for (const std::string& parent : parents) {
-                create_edge(parent, node_id);
-            }
-             */
         }
 
         // Iterate over all 'deterministic' tags (fix repeating code)
@@ -185,33 +174,44 @@ bayinf::Graph::Graph(const std::string &filename)
             }
         }
 
-        // debug
-        /*
-        for (auto& node : node_list) {
-            std::cout << node->getName() << "\n";
-            for (auto& row : node->getProbabilities()) {
-                for (auto& el : row) {
-                    std::cout << el << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "\n";
-        }*/
-
     } catch (tinyxml2::XMLError err) { // catch error when loading the xdsl file
         std::cout << "LoadFile failed with errorID: " << err << "\n";
         exit(-1);
     }
 }
 
+/*
+void bayinf::Graph::test() {
+    for (auto& node : node_list) {
+        std::cout << node->getName() << "\n";
+        for (auto& row : node->getProbabilities()) {
+            for (auto& el : row) {
+                std::cout << el << " ";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "\n";
+    }
+}*/
 
-std::shared_ptr<Node> bayinf::Graph::getNode(const std::string& name) {
-    for (const auto& node : node_list)
-        if (node->getName() == name)
-            return node;
-    return nullptr;
+void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problist) {
+    for (const auto& node : node_list) {
+        if (node->getName() == name) {
+            int cpt_size = Utils::calc_cpt_size(node->getProbabilities());
+            if (cpt_size == Utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
+                int n = 0;
+                int row_length = node->getStates().size();
+                int n_rows = cpt_size / row_length;
+                std::vector<std::vector<float>> probabilites(n_rows);
+                for (auto& p : Utils::split_string(problist, ' ')) {
+                    probabilites[n/row_length].push_back(std::stof(p));
+                    n++;
+                }
+                node->changeProbs(probabilites);
+            }
+        }
+    }
 }
-
 
 std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
     std::uniform_real_distribution<double> dis(0,1);

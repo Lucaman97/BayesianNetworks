@@ -17,9 +17,9 @@ public:
     // probabilities(std::move(probabilities)), parents(std::move(parents)) {};
     std::string getName() const;
 
-    void setHashmapList(std::string newList);
-    static std::string hashFun(std::string);
-    void changeProbs();
+    void setHashmapList(const std::string& newList);
+    static std::string hashFun(const std::string&);
+    void changeProbs(const std::vector<std::vector<float>>& probabilities);
     std::unordered_map<std::string, int> getStatesMap() const;
     std::vector<std::string> getStates() const;
     std::vector<std::vector<float>> getProbabilities() const;

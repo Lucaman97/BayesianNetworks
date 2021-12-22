@@ -48,7 +48,7 @@ Node::Node(std::string name, std::vector<std::string> states, std::unordered_map
     */
 }
 
-void Node::setHashmapList(std::string newList) {
+void Node::setHashmapList(const std::string& newList) {
 
     //if hash(probabilities) is not in probs_hashmap, then add it,
     // else make the probabilities pointer point the one already existing
@@ -87,11 +87,16 @@ void Node::setHashmapList(std::string newList) {
     }
 }
 
-std::string Node::hashFun(std::string raw) {
+std::string Node::hashFun(const std::string& raw) {
 
     Chocobo1::SHA1 hash;
     hash.addData(raw.c_str(), raw.size()).finalize();
     return hash.toString();
+}
+
+void Node::changeProbs(const std::vector<std::vector<float>>& probabilities) {
+    clone_if_needed();
+    *ptr() = probabilities;
 }
 
 

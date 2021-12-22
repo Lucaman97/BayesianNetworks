@@ -22,3 +22,11 @@ std::vector<std::string> Utils::split_string(const std::string &input, char deli
 
     return tokens;
 }
+
+int Utils::calc_cpt_size(const std::vector<std::vector<float>>& cpt) {
+    int size = 0;
+    for (auto& row : cpt) {
+        size += row.size();
+    }
+    return size;
+}
