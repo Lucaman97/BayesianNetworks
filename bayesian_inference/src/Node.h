@@ -12,7 +12,7 @@
 class Node : public COWBase<std::vector<std::vector<float>>>{
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-                  const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states);
+                  std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, int n_states);
     //: name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
     // probabilities(std::move(probabilities)), parents(std::move(parents)) {};
     std::string getName() const;
@@ -25,7 +25,7 @@ public:
     std::vector<std::vector<float>> getProbabilities() const;
     std::vector<std::string> getParents() const;
 
-    static std::unordered_map<std::string, std::vector<std::vector<float>>> probs_hashmap;
+    static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
 
 private:
     std::string name;

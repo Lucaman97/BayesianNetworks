@@ -5,6 +5,12 @@
 #include <vector>
 
 int main() {
+
+    int a[] = {1,2,3};
+    int *b;
+    b = a;
+    a[0] =2;
+    std::cout<<b<<std::endl;
     bayinf::Graph network("data/Credit.xdsl");
 
     auto start = std::chrono::high_resolution_clock::now();

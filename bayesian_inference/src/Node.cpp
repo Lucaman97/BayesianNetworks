@@ -27,7 +27,7 @@ std::vector<std::string> Node::getParents() const {
 }
 
 Node::Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states)
+           std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, int n_states)
 {
     construct();
     this->name = (std::move(name));
@@ -35,7 +35,7 @@ Node::Node(std::string name, std::vector<std::string> states, std::unordered_map
     this->states_map = (std::move(states_map));
     this->parents = (std::move(parents));
     this->n_states = (std::move(n_states));
-    *ptr() = (probabilities);
+    ptr() = std::move(probabilities);
 
     /*
     if (this->name == "Profession") {
@@ -84,7 +84,7 @@ void Node::setHashmapList(const std::string& newList) {
                 //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
             }
         }
-        Node::probs_hashmap[hashedCPT] = secondLayerVec;
+        *Node::probs_hashmap[hashedCPT] = secondLayerVec;
     }
 }
 

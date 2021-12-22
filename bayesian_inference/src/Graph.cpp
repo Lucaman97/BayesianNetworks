@@ -7,9 +7,8 @@
 #include "tinyxml2.h"
 #include "Utils.h"
 
-
 //Define the static member
-std::unordered_map<std::string, std::vector<std::vector<float>>> Node::probs_hashmap;
+//std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
 
 bayinf::Graph::Graph(const std::string &filename)
 {
@@ -56,7 +55,7 @@ bayinf::Graph::Graph(const std::string &filename)
             // save the probabilities
             if (e->FirstChildElement("probabilities") != nullptr) {
                 std::string problist = e->FirstChildElement("probabilities")->GetText();
-                int n_cols = Utils::word_count(problist)/state_counter;
+                int n_cols = Utils::word_count(problist) / state_counter;
                 std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
 
 
@@ -72,35 +71,34 @@ bayinf::Graph::Graph(const std::string &filename)
                 std::string hashedCPT = Node::hashFun(problist);
 
                 //If the hashmap does not contain the node, then:
-                if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
-                {
+
+                if (Node::probs_hashmap[hashedCPT].get() == nullptr) {
                     std::vector<float> firstLayerVec;
                     std::vector<std::vector<float>> secondLayerVec;
                     //Node::probs_hashmap[hash.toString()].push_back(firstLayerVec);
-                    while (ss >> prob)
-                    {
-                            //let's add the probabilities to the hashmap: the hashed probabilities are the key.
-                            // 'i' is the vector index
+                    while (ss >> prob) {
+                        //let's add the probabilities to the hashmap: the hashed probabilities are the key.
+                        // 'i' is the vector index
 
                         firstLayerVec.push_back(std::stof(prob));
-                            //Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
+                        //Node::probs_hashmap[hash.toString()][i].push_back(std::stof(prob));
 
                         //probabilities[i].push_back(std::stof(prob));
                         n_states++;
-                        if (n_states == state_counter)
-                        {
+                        if (n_states == state_counter) {
                             secondLayerVec.emplace_back(firstLayerVec);
                             //std::vector<float> firstLayerVec;
                             firstLayerVec.clear();
                             n_states = 0;
-                          //  i++;
+                            //  i++;
                             //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
                         }
                     }
-                    Node::probs_hashmap[hashedCPT] = secondLayerVec;
+                    *Node::probs_hashmap[hashedCPT] = secondLayerVec;
                 }
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
-                node_list.push_back(std::make_shared<Node>(node));
+
+                Node *node = new Node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
+                node_list.push_back(std::make_shared<Node>(*node));
                 node_indexes[node_id] = (int)node_list.size() - 1;
             }
 
@@ -151,7 +149,7 @@ bayinf::Graph::Graph(const std::string &filename)
                 std::string hashedCPT = Node::hashFun(statelist);
 
                 //If the hashmap does not contain the node, then:
-                if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+                if( Node::probs_hashmap.find(hashedCPT.c_str()) == Node::probs_hashmap.end())
                 {
                     std::vector<std::vector<float>> table;
                     while (ss >> res_state)
@@ -165,11 +163,11 @@ bayinf::Graph::Graph(const std::string &filename)
                         }
                         table.push_back(row);
                     }
-                    Node::probs_hashmap[hashedCPT] = table;
+                    *Node::probs_hashmap[hashedCPT] = table;
                 }
                 //let's create the node and let's assign to it the probabilities added in probs_hashmap.
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
-                node_list.emplace_back(std::make_shared<Node>(node));
+                Node *node = new Node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
+                node_list.emplace_back(std::make_shared<Node>(*node));
                 node_indexes[node_id] = (int)node_list.size() - 1;
 
             }
@@ -208,8 +206,8 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
                     probabilities[n / row_length].push_back(std::stof(p));
                     n++;
                 }
-                Node::probs_hashmap[node->hashFun(problist)] = probabilities;
-                node->changeProbs(Node::probs_hashmap[node->hashFun(problist)]);
+                *Node::probs_hashmap[node->hashFun(problist)] = probabilities;
+                node->changeProbs(*Node::probs_hashmap[node->hashFun(problist)]);
             }
         }
     }
