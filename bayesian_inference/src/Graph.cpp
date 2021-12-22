@@ -171,6 +171,7 @@ bayinf::Graph::Graph(const std::string &filename)
                 Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
                 node_list.emplace_back(std::make_shared<Node>(node));
                 node_indexes[node_id] = (int)node_list.size() - 1;
+
             }
         }
 
@@ -202,16 +203,20 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
                 int n = 0;
                 int row_length = node->getStates().size();
                 int n_rows = cpt_size / row_length;
-                std::vector<std::vector<float>> probabilites(n_rows);
+                std::vector<std::vector<float>> probabilities(n_rows);
                 for (auto& p : Utils::split_string(problist, ' ')) {
-                    probabilites[n/row_length].push_back(std::stof(p));
+                    probabilities[n / row_length].push_back(std::stof(p));
                     n++;
                 }
-                node->changeProbs(probabilites);
+                Node::probs_hashmap[node->hashFun(problist)] = probabilities;
+                node->changeProbs(Node::probs_hashmap[node->hashFun(problist)]);
             }
         }
     }
 }
+
+
+
 
 std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
     std::uniform_real_distribution<double> dis(0,1);

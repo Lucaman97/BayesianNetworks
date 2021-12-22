@@ -9,7 +9,7 @@
 template<class T>
 class COWBase
 {
-protected:
+public:
     // call this function in derived constructor
     void construct()
     {

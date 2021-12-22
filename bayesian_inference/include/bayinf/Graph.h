@@ -18,10 +18,11 @@ namespace bayinf {
         std::vector<float> rejection_sampling(const std::string& query, int num_samples);
         std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
         //void test(); // debug only
+        std::vector<std::shared_ptr<Node>> node_list;
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
-        std::vector<std::shared_ptr<Node>> node_list;
+
         std::unordered_map<std::string,int> node_indexes;
         std::default_random_engine gen; // random number generator
     };

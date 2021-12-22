@@ -9,7 +9,7 @@
 #include <memory>
 #include "COWBase.h"
 // this class will contain a CPT
-class Node : private COWBase<std::vector<std::vector<float>>>{
+class Node : public COWBase<std::vector<std::vector<float>>>{
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
                   const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states);

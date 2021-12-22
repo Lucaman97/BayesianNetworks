@@ -36,6 +36,7 @@ Node::Node(std::string name, std::vector<std::string> states, std::unordered_map
     this->parents = (std::move(parents));
     this->n_states = (std::move(n_states));
     *ptr() = (probabilities);
+
     /*
     if (this->name == "Profession") {
         for (auto& v : this->getProbabilities()) {
