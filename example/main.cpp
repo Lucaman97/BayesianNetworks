@@ -26,11 +26,17 @@ int main() {
     float seconds = (float)std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()/(float)1000000;
 
     std::cout << "Took " << seconds << " s\n";
-    std::cout<< "Before modifying node_counter: ";
-    for(auto &node : network.node_list){
-            std::cout<<"Node: "<<node->getName();
-            std::cout<<" "<<node->ptr()<<std::endl;
+    std::cout<< "Before modifying:\n";
+    /*for(auto &node : network.node_list){
+            std::cout<<"Node: "<<node.getName();
+            std::cout<<" "<<node.ptr()<<std::endl;
 
+    }
+    std::cout<<std::endl;*/
+    for(auto &node : network.node_list){
+        if(node.getName() == "Debit"){
+            std::cout<<"Counter: "<<node.use_count();
+        }
     }
     std::cout<<std::endl;
     // now let's try to edit a cpt
@@ -44,13 +50,32 @@ int main() {
         std::cout << posteriors[i] << ",";
     std::cout << posteriors[posteriors.size()-1] << ">\n";
 
-
+    std::cout<< "After modifying:\n";
     for(auto &node : network.node_list){
-        if(node->getName() == "Debit"){
+        if(node.getName() == "Debit"){
             std::cout<<"Counter: "<<node.use_count();
         }
     }
+    std::cout<<std::endl;
 
+    // now let's try to edit a cpt again
+    network.edit_cpt("Income", "0.333333 0.333333 0.333333");
+    std::cout << "Modified Income: 0.333333, 0.333333, 0.333333\n";
+
+    posteriors = network.likelihood_weighting(query, num_samples);
+
+    std::cout << "P(" << query << ") = <";
+    for (int i = 0; i < posteriors.size()-1; i++)
+        std::cout << posteriors[i] << ",";
+    std::cout << posteriors[posteriors.size()-1] << ">\n";
+
+    std::cout<< "After modifying:\n";
+    for(auto &node : network.node_list){
+        if(node.getName() == "Debit"){
+            std::cout<<"Counter: "<<node.use_count();
+        }
+    }
+    std::cout<<std::endl;
 
     return 0;
 }

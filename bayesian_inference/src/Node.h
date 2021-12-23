@@ -8,24 +8,29 @@
 #include <unordered_map>
 #include <memory>
 #include "COWBase.h"
-// this class will contain a CPT
-class Node : public COWBase<std::vector<std::vector<float>>>{
+
+class Node {
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-                  const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states);
-    //: name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
-    // probabilities(std::move(probabilities)), parents(std::move(parents)) {};
-    std::string getName() const;
+                  std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, int n_states)
+            : name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
+             probabilities(std::move(probabilities)), parents(std::move(parents)) {};
 
+    std::string getName() const;
     void setHashmapList(const std::string& newList);
     static std::string hashFun(const std::string&);
-    void changeProbs(const std::vector<std::vector<float>>& probabilities);
     std::unordered_map<std::string, int> getStatesMap() const;
     std::vector<std::string> getStates() const;
     std::vector<std::vector<float>> getProbabilities() const;
+    void setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>>& probabilities);
     std::vector<std::string> getParents() const;
 
-    static std::unordered_map<std::string, std::vector<std::vector<float>>> probs_hashmap;
+    static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
+
+    long use_count() const
+    {
+        return probabilities.use_count();
+    }
 
 private:
     std::string name;
@@ -33,6 +38,7 @@ private:
     std::unordered_map<std::string,int> states_map; // state,index
     std::vector<std::string> states;
     std::vector<std::string> parents;
+    std::shared_ptr<std::vector<std::vector<float>>> probabilities;
     int n_states;
     //std::shared_ptr<std::vector<std::vector<float>>> probabilities;
     // + m_ptr that is the pointer to the actual probabilities matrix

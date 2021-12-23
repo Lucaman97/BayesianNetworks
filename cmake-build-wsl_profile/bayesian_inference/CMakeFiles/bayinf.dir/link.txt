@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbayinf.a CMakeFiles/bayinf.dir/src/Graph.cpp.o CMakeFiles/bayinf.dir/src/Node.cpp.o CMakeFiles/bayinf.dir/extern/tinyxml2/tinyxml2.cpp.o CMakeFiles/bayinf.dir/src/Utils.cpp.o
+/usr/bin/ranlib libbayinf.a

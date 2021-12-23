@@ -2,6 +2,7 @@
 #define BAYESIANNETWORKS_NODE
 
 #include <sstream>
+#include <utility>
 #include <sha1.h>
 #include "Node.h"
 //#include "../extern/hashLibrary/sha1.h"
@@ -19,35 +20,25 @@ std::vector<std::string> Node::getStates() const {
 }
 
 std::vector<std::vector<float>> Node::getProbabilities() const {
-    return *ptr();
+    return *probabilities;
 }
 
 std::vector<std::string> Node::getParents() const {
     return parents;
 }
 
+
+/*
 Node::Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-           const std::vector<std::vector<float>>& probabilities, std::vector<std::string> parents, int n_states)
+           std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, int n_states)
 {
-    construct();
     this->name = (std::move(name));
     this->states = std::move(states);
     this->states_map = (std::move(states_map));
     this->parents = (std::move(parents));
     this->n_states = (std::move(n_states));
-    *ptr() = (probabilities);
-
-    /*
-    if (this->name == "Profession") {
-        for (auto& v : this->getProbabilities()) {
-            for (auto& p : v) {
-                std::cout << p << " ";
-            }
-            std::cout << "\n";
-        }
-    }
-    */
-}
+    this->probabilities = std::move(probabilities);
+}*/
 
 void Node::setHashmapList(const std::string& newList) {
 
@@ -84,7 +75,7 @@ void Node::setHashmapList(const std::string& newList) {
                 //Node::probs_hashmap[hash.toString()].emplace_back(firstLayerVec);
             }
         }
-        Node::probs_hashmap[hashedCPT] = secondLayerVec;
+        Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(secondLayerVec);
     }
 }
 
@@ -95,9 +86,8 @@ std::string Node::hashFun(const std::string& raw) {
     return hash.toString();
 }
 
-void Node::changeProbs(const std::vector<std::vector<float>>& probabilities) {
-    clone_if_needed();
-    *ptr() = probabilities;
+void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities) {
+    this->probabilities = probabilities;
 }
 
 

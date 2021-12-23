@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="bayinf"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\bayesian_inference\;CMake Files\example\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bayinf">
+				<Option output="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/libbayinf.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/include"/>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/tinyxml2"/>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/hashLibrary"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 bayinf"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bayinf/fast">
+				<Option output="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/libbayinf.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/include"/>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/tinyxml2"/>
+					<Add directory="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/hashLibrary"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 bayinf/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/tinyxml2/tinyxml2.cpp">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/extern/tinyxml2/tinyxml2.h">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/src/Graph.cpp">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/src/Node.cpp">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/src/Node.h">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/src/Utils.cpp">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/src/Utils.h">
+			<Option target="bayinf"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/bayesian_inference/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\bayesian_inference\"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/example/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\example\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
