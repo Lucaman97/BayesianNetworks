@@ -6,7 +6,7 @@
 #define BAYESIANNETWORKS_COWBASE_H
 #pragma once
 
-template<typename T>
+template<class T>
 class COWBase
 {
 public:
@@ -31,9 +31,9 @@ public:
         return m_ptr.get();
     }
     // function to get the internal raw ptr
-    std::shared_ptr<T> ptr()
+    T* ptr()
     {
-        return m_ptr;
+        return m_ptr.get();
     }
     // returns count of the shared_ptr instance
     long use_count() const
