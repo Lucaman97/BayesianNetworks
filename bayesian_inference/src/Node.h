@@ -8,8 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include "COWBase.h"
-
-class Node {
+class Node : COWBase<std::vector<std::vector<float>>>{
 public:
     explicit Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
                   std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, int n_states)

@@ -11,20 +11,20 @@ class COWBase
 {
 public:
     void copy_ptr(std::shared_ptr<T> other) {
-        m_ptr = other;
+        probabilities = other;
     }
     // function to get the internal raw ptr
     /*const T* ptr() const
     {
-        return m_ptr.get();
+        return probabilities.get();
     }*/
     // returns count of the shared_ptr instance
     long use_count() const
     {
-        return m_ptr.use_count();
+        return probabilities.use_count();
     }
 private:
-    std::shared_ptr<T> m_ptr;
+    std::shared_ptr<T> probabilities;
 };
 
 #endif //BAYESIANNETWORKS_COWBASE_H
