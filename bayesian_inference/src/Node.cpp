@@ -40,17 +40,17 @@ void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>
     //    std::cout<<"Number of pointers: "<<probabilities.use_count()<<std::endl;
 }
 
-void probs_check_delete(){
+void Node::probs_check_delete(){
+    std::string hash;
     for(auto &e : Node::probs_hashmap){
-        auto s = e.first;
+        hash = e.first;
 
-        if(Node::probs_hashmap[s].unique()){
+        if (Node::probs_hashmap[hash].use_count() == 1) {
             std::cout<<"Deleting node"<<std::endl;
-            Node::probs_hashmap[s].reset();
-            Node::probs_hashmap.erase(s);
+            break;
         }
     }
-
+    Node::probs_hashmap.erase(hash);
 }
 
 #endif //BAYESIANNETWORKS_NODE

@@ -20,6 +20,17 @@ namespace bayinf {
         //void test(); // debug only
         std::vector<Node> node_list; // da rimettere private
         inline int getMapSize(){ return Node::probs_hashmap.size();};
+        inline void printMap() {
+            for (auto& e : Node::probs_hashmap) {
+                for (auto& row : *e.second) {
+                    for (auto& el : row) {
+                        std::cout << el << " ";
+                    }
+                }
+                std::cout << "\n";
+            }
+            std::cout << "\n";
+        }
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);

@@ -207,7 +207,7 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
             }
         }
     }
-    void probs_check_delete();
+    Node::probs_check_delete();
 }
 
 

@@ -34,6 +34,7 @@ int main() {
         }
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
+    network.printMap();
     std::cout<<std::endl;
     // now let's try to edit a cpt
     network.edit_cpt("Income", "0.5 0.42 0.08");
@@ -53,6 +54,7 @@ int main() {
         }
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
+    network.printMap();
     std::cout<<std::endl;
 
     // now let's try to edit a cpt again
@@ -74,7 +76,7 @@ int main() {
     }
 
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-
+    network.printMap();
 
 
     network.edit_cpt("Income", "0.5 0.42 0.08");
@@ -95,6 +97,7 @@ int main() {
         }
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
+    network.printMap();
     return 0;
 }
 
