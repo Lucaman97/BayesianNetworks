@@ -19,6 +19,7 @@ namespace bayinf {
         std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
         //void test(); // debug only
         std::vector<Node> node_list; // da rimettere private
+        inline int getMapSize(){ return Node::probs_hashmap.size();};
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);

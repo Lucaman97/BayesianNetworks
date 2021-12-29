@@ -25,23 +25,19 @@ int main() {
 
     float seconds = (float)std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()/(float)1000000;
 
-    std::cout << "Took " << seconds << " s\n";
+    std::cout << "Took " << seconds << " s\n"<<std::endl;
     std::cout<< "Before modifying:\n";
-    /*for(auto &node : network.node_list){
-            std::cout<<"Node: "<<node.getName();
-            std::cout<<" "<<node.ptr()<<std::endl;
 
-    }
-    std::cout<<std::endl;*/
     for(auto &node : network.node_list){
         if(node.getName() == "Debit"){
-            std::cout<<"Counter: "<<node.use_count();
+            std::cout<<"Counter: "<<node.use_count()<<std::endl;
         }
     }
+    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
     std::cout<<std::endl;
     // now let's try to edit a cpt
-    network.edit_cpt("Income", "0.5 0.5 0");
-    std::cout << "Modified Income: 0.5, 0.5, 0\n";
+    network.edit_cpt("Income", "0.5 0.42 0.08");
+    std::cout << "\nModified Income: 0.5, 0.42, 0.08\n";
 
     posteriors = network.likelihood_weighting(query, num_samples);
 
@@ -53,14 +49,15 @@ int main() {
     std::cout<< "After modifying:\n";
     for(auto &node : network.node_list){
         if(node.getName() == "Debit"){
-            std::cout<<"Counter: "<<node.use_count();
+            std::cout<<"Counter: "<<node.use_count()<<std::endl;
         }
     }
+    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
     std::cout<<std::endl;
 
     // now let's try to edit a cpt again
     network.edit_cpt("Income", "0.333333 0.333333 0.333333");
-    std::cout << "Modified Income: 0.333333, 0.333333, 0.333333\n";
+    std::cout << "\nModified Income: 0.333333, 0.333333, 0.333333\n";
 
     posteriors = network.likelihood_weighting(query, num_samples);
 
@@ -72,11 +69,32 @@ int main() {
     std::cout<< "After modifying:\n";
     for(auto &node : network.node_list){
         if(node.getName() == "Debit"){
-            std::cout<<"Counter: "<<node.use_count();
+            std::cout<<"Counter: "<<node.use_count()<<std::endl;
         }
     }
-    std::cout<<std::endl;
 
+    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
+
+
+
+    network.edit_cpt("Income", "0.5 0.42 0.08");
+    std::cout << "\nModified Income: 0.5, 0.42, 0.08\n";
+
+    posteriors = network.likelihood_weighting(query, num_samples);
+
+    std::cout << "P(" << query << ") = <";
+    for (int i = 0; i < posteriors.size()-1; i++)
+        std::cout << posteriors[i] << ",";
+    std::cout << posteriors[posteriors.size()-1] << ">\n";
+
+    std::cout<<std::endl;
+    std::cout<< "After modifying:\n";
+    for(auto &node : network.node_list){
+        if(node.getName() == "Debit"){
+            std::cout<<"Counter: "<<node.use_count()<<std::endl;
+        }
+    }
+    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
     return 0;
 }
 

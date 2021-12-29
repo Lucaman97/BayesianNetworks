@@ -14,16 +14,18 @@ public:
         probabilities = other;
     }
     // function to get the internal raw ptr
-    /*const T* ptr() const
+    const T* ptr() const
     {
         return probabilities.get();
-    }*/
+    }
+
+
     // returns count of the shared_ptr instance
     long use_count() const
     {
         return probabilities.use_count();
     }
-private:
+protected:
     std::shared_ptr<T> probabilities;
 };
 
