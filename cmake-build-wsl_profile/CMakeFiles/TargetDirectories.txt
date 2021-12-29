@@ -1,8 +1,0 @@
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/CMakeFiles/bayinf.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/bayesian_inference/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/example/CMakeFiles/example1.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/example/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-wsl_profile/example/CMakeFiles/rebuild_cache.dir
