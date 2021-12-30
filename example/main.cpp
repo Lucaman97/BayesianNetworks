@@ -5,6 +5,8 @@
 #include <vector>
 
 int main() {
+    std::cout<<"START"<<std::endl<<"------------------------";
+
     bayinf::Graph network("data/Credit.xdsl");
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -34,9 +36,11 @@ int main() {
         }
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-    network.printMap();
-    std::cout<<std::endl;
-    // now let's try to edit a cpt
+    network.printNode("Income");
+    //network.printMap();
+    std::cout<<"------------------------"<<std::endl;
+
+    std::cout<<std::flush<<"now let's try to edit a cpt"<<std::endl;
     network.edit_cpt("Income", "0.5 0.42 0.08");
     std::cout << "\nModified Income: 0.5, 0.42, 0.08\n";
 
@@ -53,11 +57,13 @@ int main() {
             std::cout<<"Counter: "<<node.use_count()<<std::endl;
         }
     }
-    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-    network.printMap();
-    std::cout<<std::endl;
+    std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl<<std::endl;
+    network.printNode("Income");
+    //network.printMap();
+    std::cout<<"------------------------"<<std::endl;
 
-    // now let's try to edit a cpt again
+
+    std::cout<<"now let's try to edit a cpt again:"<<std::endl;
     network.edit_cpt("Income", "0.333333 0.333333 0.333333");
     std::cout << "\nModified Income: 0.333333, 0.333333, 0.333333\n";
 
@@ -76,9 +82,11 @@ int main() {
     }
 
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-    network.printMap();
+    network.printNode("Income");
+    //network.printMap();
+    std::cout<<"------------------------"<<std::endl;
 
-
+    std::cout<<"Let's edit again the cpt:"<<std::endl;
     network.edit_cpt("Income", "0.5 0.42 0.08");
     std::cout << "\nModified Income: 0.5, 0.42, 0.08\n";
 
@@ -90,14 +98,16 @@ int main() {
     std::cout << posteriors[posteriors.size()-1] << ">\n";
 
     std::cout<<std::endl;
-    std::cout<< "After modifying:\n";
+    std::cout<< "After modifying for the second time:\n";
     for(auto &node : network.node_list){
         if(node.getName() == "Debit"){
             std::cout<<"Counter: "<<node.use_count()<<std::endl;
         }
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
+    network.printNode("Income");
     network.printMap();
+    std::cout<<"------------------------"<<std::endl;
     return 0;
 }
 

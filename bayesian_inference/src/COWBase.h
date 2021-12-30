@@ -14,9 +14,9 @@ public:
         probabilities = other;
     }
     // function to get the internal raw ptr
-    const T* ptr() const
+    std::shared_ptr<T> prob()
     {
-        return probabilities.get();
+        return probabilities;
     }
 
 

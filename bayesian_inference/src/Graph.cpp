@@ -186,6 +186,22 @@ void bayinf::Graph::test() {
     }
 }*/
 
+void bayinf::Graph::printNode(std::string name){
+  auto n = node_list[node_indexes[name]];
+  std::cout<<"Node name: "<<n.getName()<<std::endl;
+  auto p = n.prob();
+    std::cout<<"CPT count: "<<p.use_count()<<std::endl;
+    for (auto& row : *p) {
+        std::cout<<"Row: ";
+        for (auto& el : row) {
+            std::cout << el << " ";
+        }
+        std::cout<<std::endl;
+    }
+    std::cout << "\n";
+}
+
+
 void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problist) {
     for (auto& node : node_list) {
         if (node.getName() == name) {
@@ -199,6 +215,7 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
                     probabilities[n / row_length].push_back(std::stof(p));
                     n++;
                 }
+
                 std::string hashedCPT = Node::hashFun(problist);
                 if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end()) {
                     Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(probabilities);

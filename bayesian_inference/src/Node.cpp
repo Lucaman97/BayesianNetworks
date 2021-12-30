@@ -47,9 +47,11 @@ void Node::probs_check_delete(){
 
         if (Node::probs_hashmap[hash].use_count() == 1) {
             std::cout<<"Deleting node"<<std::endl;
+            //Node::probs_hashmap.erase(hash);
             break;
         }
     }
+
     Node::probs_hashmap.erase(hash);
 }
 
