@@ -35,24 +35,19 @@ std::string Node::hashFun(const std::string& raw) {
     return hash.toString();
 }
 
-void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities) {
+void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCPT) {
     this->probabilities = probabilities;
+    this->hashedCPT = hashedCPT; // the new hash
     //    std::cout<<"Number of pointers: "<<probabilities.use_count()<<std::endl;
 }
 
-void Node::probs_check_delete(){
-    std::string hash;
-    for(auto &e : Node::probs_hashmap){
-        hash = e.first;
+void Node::probs_check_delete(const std::string& hashedCPT) {
+    if (Node::probs_hashmap[hashedCPT].use_count() == 1)
+        Node::probs_hashmap.erase(hashedCPT);
+}
 
-        if (Node::probs_hashmap[hash].use_count() == 1) {
-            std::cout<<"Deleting node"<<std::endl;
-            //Node::probs_hashmap.erase(hash);
-            break;
-        }
-    }
-
-    Node::probs_hashmap.erase(hash);
+std::string Node::getHashedCPT() const {
+    return hashedCPT;
 }
 
 #endif //BAYESIANNETWORKS_NODE

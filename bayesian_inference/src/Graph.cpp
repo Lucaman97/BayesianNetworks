@@ -13,7 +13,6 @@ std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>
 
 bayinf::Graph::Graph(const std::string &filename)
 {
-
     tinyxml2::XMLDocument doc;
     try {
         tinyxml2::XMLError err_id = doc.LoadFile(("../../" + filename).c_str());
@@ -90,7 +89,7 @@ bayinf::Graph::Graph(const std::string &filename)
                     }
                     Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(secondLayerVec);
                 }
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
+                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter, hashedCPT);
                 node_list.push_back(node);
                 node_indexes[node_id] = (int)node_list.size() - 1;
             }
@@ -159,7 +158,7 @@ bayinf::Graph::Graph(const std::string &filename)
                     Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(table);
                 }
                 //let's create the node and let's assign to it the probabilities added in probs_hashmap.
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter);
+                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter, hashedCPT);
                 node_list.push_back(node);
                 node_indexes[node_id] = (int)node_list.size() - 1;
 
@@ -189,7 +188,7 @@ void bayinf::Graph::test() {
 void bayinf::Graph::printNode(std::string name){
   auto n = node_list[node_indexes[name]];
   std::cout<<"Node name: "<<n.getName()<<std::endl;
-  auto p = n.prob();
+    auto p = n.prob();
     std::cout<<"CPT count: "<<p.use_count()<<std::endl;
     for (auto& row : *p) {
         std::cout<<"Row: ";
@@ -215,16 +214,17 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
                     probabilities[n / row_length].push_back(std::stof(p));
                     n++;
                 }
-
+                std::string oldHash = node.getHashedCPT(); // retrieve hashedCPT before modifying it
                 std::string hashedCPT = Node::hashFun(problist);
                 if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end()) {
                     Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(probabilities);
                 }
-                node.setProbabilities(Node::probs_hashmap[hashedCPT]);
+                node.setProbabilities(Node::probs_hashmap[hashedCPT], hashedCPT);
+                Node::probs_check_delete(oldHash);
             }
+            break;
         }
     }
-    Node::probs_check_delete();
 }
 
 

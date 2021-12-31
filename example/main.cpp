@@ -5,7 +5,7 @@
 #include <vector>
 
 int main() {
-    std::cout<<"START"<<std::endl<<"------------------------";
+    std::cout<<"START"<<std::endl<<"------------------------\n";
 
     bayinf::Graph network("data/Credit.xdsl");
 
@@ -37,7 +37,7 @@ int main() {
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
     network.printNode("Income");
-    //network.printMap();
+    network.printMap();
     std::cout<<"------------------------"<<std::endl;
 
     std::cout<<std::flush<<"now let's try to edit a cpt"<<std::endl;
@@ -59,7 +59,7 @@ int main() {
     }
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl<<std::endl;
     network.printNode("Income");
-    //network.printMap();
+    network.printMap();
     std::cout<<"------------------------"<<std::endl;
 
 
@@ -83,7 +83,7 @@ int main() {
 
     std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
     network.printNode("Income");
-    //network.printMap();
+    network.printMap();
     std::cout<<"------------------------"<<std::endl;
 
     std::cout<<"Let's edit again the cpt:"<<std::endl;
