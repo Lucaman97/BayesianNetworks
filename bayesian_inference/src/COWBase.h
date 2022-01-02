@@ -1,7 +1,3 @@
-//
-// Created by lmann on 21/12/2021.
-//
-
 #ifndef BAYESIANNETWORKS_COWBASE_H
 #define BAYESIANNETWORKS_COWBASE_H
 #pragma once
@@ -10,9 +6,7 @@ template<class T>
 class COWBase
 {
 public:
-    void copy_ptr(std::shared_ptr<T> other) {
-        probabilities = other;
-    }
+
     // function to get the internal raw ptr
     std::shared_ptr<T> prob()
     {

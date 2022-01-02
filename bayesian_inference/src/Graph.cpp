@@ -66,8 +66,6 @@ bayinf::Graph::Graph(const std::string &filename)
 
                 //if hash(probabilities) is not in probs_hashmap, then add it,
                 // else make the probabilities pointer point the one already existing
-
-
                 std::string hashedCPT = Node::hashFun(problist);
 
                 //If the hashmap does not contain the node, then:
@@ -171,23 +169,9 @@ bayinf::Graph::Graph(const std::string &filename)
     }
 }
 
-/*
-void bayinf::Graph::test() {
-    for (auto& node : node_list) {
-        std::cout << node.getName() << "\n";
-        for (auto& row : node.getProbabilities()) {
-            for (auto& el : row) {
-                std::cout << el << " ";
-            }
-            std::cout << "\n";
-        }
-        std::cout << "\n";
-    }
-}*/
-
 void bayinf::Graph::printNode(std::string name){
   auto n = node_list[node_indexes[name]];
-  std::cout<<"Node name: "<<n.getName()<<std::endl;
+  std::cout<<"Node name: "<< n.getName() << std::endl;
     auto p = n.prob();
     std::cout<<"CPT count: "<<p.use_count()<<std::endl;
     for (auto& row : *p) {
@@ -195,9 +179,9 @@ void bayinf::Graph::printNode(std::string name){
         for (auto& el : row) {
             std::cout << el << " ";
         }
-        std::cout<<std::endl;
+        std::cout << std::endl;
     }
-    std::cout << "\n";
+    std::cout << std::endl;
 }
 
 
@@ -413,4 +397,5 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
 
     return posteriors;
 }
+
 

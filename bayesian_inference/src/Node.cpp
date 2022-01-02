@@ -25,9 +25,6 @@ std::vector<std::string> Node::getParents() const {
     return parents;
 }
 
-
-
-
 std::string Node::hashFun(const std::string& raw) {
 
     Chocobo1::SHA1 hash;

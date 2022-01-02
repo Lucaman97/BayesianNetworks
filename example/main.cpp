@@ -5,6 +5,10 @@
 #include <vector>
 
 int main() {
+
+    //AGGIUNGERE ECCEZIONI PER LO SPLITTING DELLA STRINGA DI CPT
+    //AGGIUNGERE ECCEZIONI PER QUERY CHE SONO SCRITTE MALE O LE CUI VARIABILI NON ESISTONO
+
     std::cout<<"START"<<std::endl<<"------------------------\n";
 
     bayinf::Graph network("data/Credit.xdsl");
