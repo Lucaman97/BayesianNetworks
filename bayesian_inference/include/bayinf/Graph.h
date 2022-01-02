@@ -16,19 +16,13 @@ namespace bayinf {
     public:
 
         std::vector<Node> node_list;
-
         explicit Graph(const std::string& filename);
         //friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
         void edit_cpt(const std::string& name, const std::string& problist); // problist is a list of probabilities separated by a space
         std::vector<float> rejection_sampling(const std::string& query, int num_samples);
         std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
 
-        Graph& operator=(Graph) = delete;
-        Graph(Graph&&) = delete;
-        Graph(const Graph&) = delete;
-
-
-       inline void test() {
+        inline void test() {
 
            if (DEBUG == 0) {// debug only
                for (auto &node: node_list) {
@@ -62,12 +56,11 @@ namespace bayinf {
             }
             std::cout << "\n";
         }
+    protected:
+        std::unordered_map<std::string,int> node_indexes;
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
-
-
-        std::unordered_map<std::string,int> node_indexes;
         std::default_random_engine gen; // random number generator
     };
 

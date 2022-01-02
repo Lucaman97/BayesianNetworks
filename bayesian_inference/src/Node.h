@@ -16,6 +16,7 @@ public:
             parents(std::move(parents)), hashedCPT(std::move(hashedCPT))
             {this->probabilities=(std::move(probabilities));};
 
+
     std::string getName() const;
     static std::string hashFun(const std::string&);
     std::unordered_map<std::string, int> getStatesMap() const;

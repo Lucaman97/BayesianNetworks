@@ -12,6 +12,7 @@ int main() {
     std::cout<<"START"<<std::endl<<"------------------------\n";
 
     bayinf::Graph network("data/Credit.xdsl");
+    bayinf::Graph gino(network);
 
     auto start = std::chrono::high_resolution_clock::now();
     int num_samples = 10000;

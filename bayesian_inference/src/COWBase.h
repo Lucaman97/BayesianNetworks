@@ -19,6 +19,7 @@ public:
     {
         return probabilities.use_count();
     }
+
 protected:
     std::shared_ptr<T> probabilities;
 };
