@@ -22,7 +22,7 @@ public:
     std::unordered_map<std::string, int> getStatesMap() const;
     std::vector<std::string> getStates() const;
     std::vector<std::vector<float>> getProbabilities() const;
-    void setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>>& probabilities, const std::string& hashedCPT);
+    void setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>>& probabilities, const std::string& hashedCpt);
     std::vector<std::string> getParents() const;
     std::string getHashedCPT() const;
     static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;

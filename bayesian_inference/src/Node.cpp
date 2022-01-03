@@ -32,9 +32,9 @@ std::string Node::hashFun(const std::string& raw) {
     return hash.toString();
 }
 
-void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCPT) {
+void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCpt) {
     this->probabilities = probabilities;
-    this->hashedCPT = hashedCPT; // the new hash
+    this->hashedCPT = hashedCpt; // the new hash
     //    std::cout<<"Number of pointers: "<<probabilities.use_count()<<std::endl;
 }
 

@@ -19,8 +19,6 @@ namespace bayinf {
         explicit Graph(const std::string& filename);
         //friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
         void edit_cpt(const std::string& name, const std::string& problist); // problist is a list of probabilities separated by a space
-        std::vector<float> rejection_sampling(const std::string& query, int num_samples);
-        std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
 
         inline void test() {
 
@@ -56,14 +54,21 @@ namespace bayinf {
             }
             std::cout << "\n";
         }
+
+        std::unordered_map<std::string, std::vector<float>> inference(int num_samples=1000, const std::string& evidence="", int algorithm=0);
+
+        static void pretty_print(const std::unordered_map<std::string, std::vector<float>>& map);
+
     protected:
         std::unordered_map<std::string,int> node_indexes;
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
+        std::vector<float> rejection_sampling(const std::string& query, int num_samples);
+        std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
 
 
-        int checkQueryValidity(std::string);
+        int checkQueryValidity(const std::string&);
         std::default_random_engine gen; // random number generator
     };
 

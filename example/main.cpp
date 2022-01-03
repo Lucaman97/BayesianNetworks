@@ -14,10 +14,10 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
     int num_samples = 10000;
     // how to write a query (scrivi solo la roba dentro le parentesi) -> P(MetastCancer|Coma=present,IncrSerCal=absent)
-    //std::string query = "Worth|CreditWorthiness=Negative"; // Credit
+    std::string query = "Worth|CreditWorthiness=Negative"; // Credit
     //std::string query = "ins_sens|glu_prod_16=x2_0mmol_kg_h"; // Diabetes
     //std::string query = "Animal|Environment=Land"; // Animals
-    std::string query ="adasdasd|CreditWorthiness=True"; // wrong query to test exception.
+    //std::string query ="adasdasd|CreditWorthiness=True"; // wrong query to test exception.
 
     std::vector<float> posteriors = network.likelihood_weighting(query, num_samples); // try to change 'likelihood_weighting' with 'rejection_sampling'
 

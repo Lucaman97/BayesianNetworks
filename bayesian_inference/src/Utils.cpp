@@ -1,4 +1,6 @@
 #include "Utils.h"
+#include <cctype>
+#include <string>
 #include <sstream>
 
 int Utils::word_count(const std::string &input) {
@@ -17,6 +19,7 @@ std::vector<std::string> Utils::split_string(const std::string &input, char deli
         std::string intermediate;
 
         while (getline(check, intermediate, delim)) {
+            intermediate.erase(std::remove_if(intermediate.begin(), intermediate.end(), ::isspace), intermediate.end()); // removes leading and trailing whitespaces
             tokens.push_back(intermediate);
         }
 

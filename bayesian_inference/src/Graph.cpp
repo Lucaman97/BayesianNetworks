@@ -297,33 +297,39 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
 }
 
 std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, int num_samples) {
-        int exc=0;
-        std::vector<std::string> tokens = Utils::split_string(query, '|');
-        std::string query_variable = tokens[0];
-        if (checkQueryValidity(query_variable) == 1)
-        {
-            std::cerr<<"Invalid variable name.\n";
-            throw;
-        }
-        else {
-            std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
-            for (std::string evidence: evidence_variables)
-                if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
+    int exc=0;
+    std::vector<std::string> tokens = Utils::split_string(query, '|');
+    std::string query_variable = tokens[0];
+    if (checkQueryValidity(query_variable) == 1)
+    {
+        //std::cerr<<"Invalid query name.\n";
+        throw "Invalid query name.\n";
+    }
+    else {
+        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
+        for (const std::string& evidence: evidence_variables)
+            if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
-            if (exc == 1) {
-                std::cerr << "Invalid evidence name.\n";
-                throw;
-            } else {
+        if (exc == 1) {
+            //std::cerr << "Invalid evidence name.\n";
+            throw "Invalid evidence name.\n";
+        } else {
 
-                std::unordered_map<std::string, std::string> evidence_states;
-                std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
+            std::unordered_map<std::string, std::string> evidence_states;
+            std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
 
-                for (const std::string &ev: evidence_variables) {
-                    std::vector<std::string> tok = Utils::split_string(ev, '=');
-                    evidence_states[tok[0]] = tok[1];
-                }
+            for (const std::string &ev: evidence_variables) {
+                std::vector<std::string> tok = Utils::split_string(ev, '=');
+                evidence_states[tok[0]] = tok[1];
+            }
 
-                for (int i = 0; i < num_samples; i++) {
+            int n_thread = (int) std::thread::hardware_concurrency() - 1;
+            int iterations = num_samples / n_thread;
+            int left = num_samples % n_thread;
+
+            auto t_fun = [&](int iterations) {
+                std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
+                for (int i = 0; i < iterations; i++) {
                     std::unordered_map<std::string, std::string> sample = prior_sample();
 
                     // count only the samples that are consistent with the evidence
@@ -336,42 +342,60 @@ std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, i
                         continue;
 
                     // posteriors[index of state that has been sampled for this query variable]
-                    posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]]++;
+                    local_posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]]++;
                 }
+                return local_posteriors;
+            };
 
-                // normalize
-                float sum = 0;
-                for (float posterior: posteriors)
-                    sum += posterior;
-                for (float &posterior: posteriors) {
-                    posterior /= sum;
-                    posterior = round(posterior * 100.0) / 100.0; // arrotonda a due cifre dopo la virgola
-                }
-
-                return posteriors;
+            std::vector<std::future<std::vector<float>>> t_results;
+            t_results.reserve(n_thread);
+            for (int i = 0; i < n_thread; i++) {
+                if (i == 0)
+                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+                else
+                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
             }
+
+            for (auto &res: t_results) {
+                std::vector<float> loc_posteriors = res.get();
+                for (int i = 0; i < posteriors.size(); i++)
+                    posteriors[i] += loc_posteriors[i];
+            }
+
+            // normalize
+            float sum = 0;
+            for (float posterior: posteriors)
+                sum += posterior;
+            for (float &posterior: posteriors) {
+                posterior /= sum;
+                posterior = round(posterior * 100.0) / 100.0; // arrotonda a due cifre dopo la virgola
+            }
+
+            return posteriors;
         }
+    }
 }
 
 std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query, int num_samples) {
+    int exc = 0;
+    std::vector<std::string> tokens = Utils::split_string(query, '|');
+    std::string query_variable = tokens[0];
+    if (checkQueryValidity(query_variable) == 1)
+    {
+        //std::cerr<<"Invalid query name.\n";
+        throw "Invalid query name.\n";
+    }
+    else {
+        std::vector<std::string> evidence_variables;
+        if (!tokens[1].empty())
+            evidence_variables = Utils::split_string(tokens[1], ',');
 
-        int exc = 0;
-        std::vector<std::string> tokens = Utils::split_string(query, '|');
-        std::string query_variable = tokens[0];
-        if (checkQueryValidity(query_variable) == 1)
-        {
-            std::cerr<<"Invalid variable name.\n";
-            throw;
-        }
-        else {
-        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
-
-        for (std::string evidence: evidence_variables)
+        for (const std::string& evidence: evidence_variables)
             if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
         if (exc == 1) {
-            std::cerr << "Invalid query name.\n";
-            throw;
+            //std::cerr << "Invalid evidence name.\n";
+            throw "Invalid evidence name.\n";
         } else {
             std::unordered_map<std::string, std::string> evidence_states;
             std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
@@ -381,16 +405,7 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
                 evidence_states[tok[0]] = tok[1];
             }
 
-            /*// single thread version
-            for (int i = 0; i < num_samples; i++) {
-                std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
-                std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
-                float w = std::get<1>(sample_weight);
-
-                posteriors[node_list[node_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
-            }*/
-
-            int n_thread = (int) std::thread::hardware_concurrency() - 1; // TO FIGURE OUT
+            int n_thread = (int) std::thread::hardware_concurrency() - 1;
             int iterations = num_samples / n_thread;
             int left = num_samples % n_thread;
 
@@ -432,14 +447,48 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
 
             return posteriors;
         }
-
     }
 }
 
 
-int bayinf::Graph::checkQueryValidity(std::string s){
+int bayinf::Graph::checkQueryValidity(const std::string& s){
     for(auto &v : node_list){
         if(v.getName() == s) return 0;
     }
     return 1;
+}
+
+std::unordered_map<std::string, std::vector<float>> bayinf::Graph::inference(int num_samples, const std::string& evidence, int algorithm) {
+    std::unordered_map<std::string, std::vector<float>> results;
+
+    for (auto& node : node_list) {
+        try {
+            std::string query = node.getName() + "|" + evidence;
+            std::vector<float> posteriors;
+
+            // if someone wants to add support for more algorithms in the future, he can just insert them here (maybe with a switch case)
+            if (algorithm == 0) {
+                posteriors = likelihood_weighting(query, num_samples);
+            } else {
+                posteriors = rejection_sampling(query, num_samples);
+            }
+
+            results[query] = posteriors;
+        } catch (const char* msg) {
+            std::cerr << "Error: " << msg;
+            break;
+        }
+    }
+
+    return results;
+}
+
+void bayinf::Graph::pretty_print(const std::unordered_map<std::string, std::vector<float>>& map) {
+    for (auto& el : map) {
+        std::cout << "P(" << el.first << ") = <";
+        for (int i = 0; i < el.second.size()-1; i++)
+            std::cout << el.second[i] << ",";
+        std::cout << el.second[el.second.size()-1] << ">;\n";
+    }
+    std::cout << "\n";
 };
