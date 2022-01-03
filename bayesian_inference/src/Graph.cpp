@@ -1,5 +1,6 @@
 #include "bayinf/Graph.h"
 #include <iostream>
+#include <exception>
 #include <string>
 #include <sstream>
 #include <random>
@@ -17,7 +18,7 @@ bayinf::Graph::Graph(const std::string &filename)
     try {
         tinyxml2::XMLError err_id = doc.LoadFile(("../../" + filename).c_str());
         if (err_id != 0) {
-            throw err_id;
+            throw std::runtime_error((const char*)(err_id));
         }
 
         tinyxml2::XMLElement* root = doc.FirstChildElement("smile")->FirstChildElement("nodes" );
@@ -296,106 +297,149 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
 }
 
 std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, int num_samples) {
-    std::vector<std::string> tokens = Utils::split_string(query, '|');
-    std::string query_variable = tokens[0];
-    std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
-    std::unordered_map<std::string, std::string> evidence_states;
-    std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
-
-    for (const std::string& ev : evidence_variables) {
-        std::vector<std::string> tok = Utils::split_string(ev, '=');
-        evidence_states[tok[0]] = tok[1];
-    }
-
-    for (int i = 0; i < num_samples; i++) {
-        std::unordered_map<std::string,std::string> sample = prior_sample();
-
-        // count only the samples that are consistent with the evidence
-        bool consistent = true;
-        for (auto& m : evidence_states) {
-            if (sample[m.first] != m.second)
-                consistent = false;
+        int exc=0;
+        std::vector<std::string> tokens = Utils::split_string(query, '|');
+        std::string query_variable = tokens[0];
+        if (checkQueryValidity(query_variable) == 1)
+        {
+            std::cerr<<"Invalid variable name.\n";
+            throw;
         }
-        if (!consistent)
-            continue;
+        else {
+            std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
+            for (std::string evidence: evidence_variables)
+                if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
-        // posteriors[index of state that has been sampled for this query variable]
-        posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]]++;
-    }
+            if (exc == 1) {
+                std::cerr << "Invalid evidence name.\n";
+                throw;
+            } else {
 
-    // normalize
-    float sum = 0;
-    for (float posterior : posteriors)
-        sum += posterior;
-    for (float & posterior : posteriors) {
-        posterior /= sum;
-        posterior = round(posterior * 100.0)/100.0; // arrotonda a due cifre dopo la virgola
-    }
+                std::unordered_map<std::string, std::string> evidence_states;
+                std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
 
-    return posteriors;
+                for (const std::string &ev: evidence_variables) {
+                    std::vector<std::string> tok = Utils::split_string(ev, '=');
+                    evidence_states[tok[0]] = tok[1];
+                }
+
+                for (int i = 0; i < num_samples; i++) {
+                    std::unordered_map<std::string, std::string> sample = prior_sample();
+
+                    // count only the samples that are consistent with the evidence
+                    bool consistent = true;
+                    for (auto &m: evidence_states) {
+                        if (sample[m.first] != m.second)
+                            consistent = false;
+                    }
+                    if (!consistent)
+                        continue;
+
+                    // posteriors[index of state that has been sampled for this query variable]
+                    posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]]++;
+                }
+
+                // normalize
+                float sum = 0;
+                for (float posterior: posteriors)
+                    sum += posterior;
+                for (float &posterior: posteriors) {
+                    posterior /= sum;
+                    posterior = round(posterior * 100.0) / 100.0; // arrotonda a due cifre dopo la virgola
+                }
+
+                return posteriors;
+            }
+        }
 }
 
 std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query, int num_samples) {
-    std::vector<std::string> tokens = Utils::split_string(query, '|');
-    std::string query_variable = tokens[0];
-    std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
-    std::unordered_map<std::string, std::string> evidence_states;
-    std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
 
-    for (const std::string& ev : evidence_variables) {
-        std::vector<std::string> tok = Utils::split_string(ev, '=');
-        evidence_states[tok[0]] = tok[1];
-    }
-
-    /*// single thread version
-    for (int i = 0; i < num_samples; i++) {
-        std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
-        std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
-        float w = std::get<1>(sample_weight);
-
-        posteriors[node_list[node_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
-    }*/
-
-    int n_thread = (int)std::thread::hardware_concurrency() - 1; // TO FIGURE OUT
-    int iterations = num_samples / n_thread;
-    int left = num_samples % n_thread;
-
-    auto t_fun = [&](int iterations) {
-        std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
-        for (int i = 0; i < iterations; i++) {
-            std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
-            std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
-            float w = std::get<1>(sample_weight);
-            local_posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]] += w;
+        int exc = 0;
+        std::vector<std::string> tokens = Utils::split_string(query, '|');
+        std::string query_variable = tokens[0];
+        if (checkQueryValidity(query_variable) == 1)
+        {
+            std::cerr<<"Invalid variable name.\n";
+            throw;
         }
-        return local_posteriors;
-    };
+        else {
+        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
 
-    std::vector<std::future<std::vector<float>>> t_results;
-    t_results.reserve(n_thread);
-    for (int i = 0; i < n_thread; i++) {
-        if (i == 0)
-            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
-        else
-            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
+        for (std::string evidence: evidence_variables)
+            if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
+
+        if (exc == 1) {
+            std::cerr << "Invalid query name.\n";
+            throw;
+        } else {
+            std::unordered_map<std::string, std::string> evidence_states;
+            std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
+
+            for (const std::string &ev: evidence_variables) {
+                std::vector<std::string> tok = Utils::split_string(ev, '=');
+                evidence_states[tok[0]] = tok[1];
+            }
+
+            /*// single thread version
+            for (int i = 0; i < num_samples; i++) {
+                std::tuple<std::unordered_map<std::string,std::string>, float> sample_weight = weighted_sample(evidence_states);
+                std::unordered_map<std::string,std::string> sample = std::get<0>(sample_weight);
+                float w = std::get<1>(sample_weight);
+
+                posteriors[node_list[node_indexes[query_variable]]->getStatesMap()[sample[query_variable]]] += w;
+            }*/
+
+            int n_thread = (int) std::thread::hardware_concurrency() - 1; // TO FIGURE OUT
+            int iterations = num_samples / n_thread;
+            int left = num_samples % n_thread;
+
+            auto t_fun = [&](int iterations) {
+                std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
+                for (int i = 0; i < iterations; i++) {
+                    std::tuple<std::unordered_map<std::string, std::string>, float> sample_weight = weighted_sample(
+                            evidence_states);
+                    std::unordered_map<std::string, std::string> sample = std::get<0>(sample_weight);
+                    float w = std::get<1>(sample_weight);
+                    local_posteriors[node_list[node_indexes[query_variable]].getStatesMap()[sample[query_variable]]] += w;
+                }
+                return local_posteriors;
+            };
+
+            std::vector<std::future<std::vector<float>>> t_results;
+            t_results.reserve(n_thread);
+            for (int i = 0; i < n_thread; i++) {
+                if (i == 0)
+                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+                else
+                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
+            }
+
+            for (auto &res: t_results) {
+                std::vector<float> loc_posteriors = res.get();
+                for (int i = 0; i < posteriors.size(); i++)
+                    posteriors[i] += loc_posteriors[i];
+            }
+
+            // normalize
+            float sum = 0;
+            for (float posterior: posteriors)
+                sum += posterior;
+            for (float &posterior: posteriors) {
+                posterior /= sum;
+                posterior = round(posterior * 100.0) / 100.0; // round it to 2 decimals
+            }
+
+            return posteriors;
+        }
+
     }
-
-    for (auto& res : t_results) {
-        std::vector<float> loc_posteriors = res.get();
-        for (int i=0; i < posteriors.size(); i++)
-            posteriors[i] += loc_posteriors[i];
-    }
-
-    // normalize
-    float sum = 0;
-    for (float posterior : posteriors)
-        sum += posterior;
-    for (float & posterior : posteriors) {
-        posterior /= sum;
-        posterior = round(posterior * 100.0)/100.0; // round it to 2 decimals
-    }
-
-    return posteriors;
 }
 
 
+int bayinf::Graph::checkQueryValidity(std::string s){
+    for(auto &v : node_list){
+        if(v.getName() == s) return 0;
+    }
+    return 1;
+};

@@ -61,6 +61,9 @@ namespace bayinf {
     private:
         std::unordered_map<std::string,std::string> prior_sample();
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
+
+
+        int checkQueryValidity(std::string);
         std::default_random_engine gen; // random number generator
     };
 
