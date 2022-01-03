@@ -40,6 +40,7 @@ void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>
 
 void Node::probs_check_delete(const std::string& hashedCPT) {
     if (Node::probs_hashmap[hashedCPT].use_count() == 1)
+        Node::probs_hashmap[hashedCPT].reset();
         Node::probs_hashmap.erase(hashedCPT);
 }
 
