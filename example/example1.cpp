@@ -24,12 +24,12 @@ int main() {
     int num_samples = 10000;
 
     // vanilla network (no evidence)
-    //std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples);
-    //bayinf::Graph::pretty_print(results);
+    std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples);
+    bayinf::Graph::pretty_print(results);
 
     // set evidence
     std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
-    std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples, evidence);
+    results = network.inference(num_samples, evidence);
     bayinf::Graph::pretty_print(results); // print results in a nice format
 
     // now with bad formatted evidences

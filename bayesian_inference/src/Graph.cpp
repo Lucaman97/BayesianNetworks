@@ -1,6 +1,5 @@
 #include "bayinf/Graph.h"
 #include <iostream>
-#include <exception>
 #include <string>
 #include <sstream>
 #include <random>
@@ -362,16 +361,7 @@ std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, i
                     posteriors[i] += loc_posteriors[i];
             }
 
-            // normalize
-            float sum = 0;
-            for (float posterior: posteriors)
-                sum += posterior;
-            for (float &posterior: posteriors) {
-                posterior /= sum;
-                posterior = round(posterior * 100.0) / 100.0; // arrotonda a due cifre dopo la virgola
-            }
-
-            return posteriors;
+            return Utils::normalize(posteriors);
         }
     }
 }
@@ -386,9 +376,7 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
         throw "Invalid query name.\n";
     }
     else {
-        std::vector<std::string> evidence_variables;
-        if (!tokens[1].empty())
-            evidence_variables = Utils::split_string(tokens[1], ',');
+        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
 
         for (const std::string& evidence: evidence_variables)
             if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
@@ -436,18 +424,43 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
                     posteriors[i] += loc_posteriors[i];
             }
 
-            // normalize
-            float sum = 0;
-            for (float posterior: posteriors)
-                sum += posterior;
-            for (float &posterior: posteriors) {
-                posterior /= sum;
-                posterior = round(posterior * 100.0) / 100.0; // round it to 2 decimals
-            }
-
-            return posteriors;
+            return Utils::normalize(posteriors);
         }
     }
+}
+
+std::vector<float> bayinf::Graph::simple_sampling(const std::string& query, int num_samples) {
+    std::vector<float> posteriors(node_list[node_indexes[query]].getStates().size(), 0);
+    int n_thread = (int) std::thread::hardware_concurrency() - 1;
+    int iterations = num_samples / n_thread;
+    int left = num_samples % n_thread;
+
+    auto t_fun = [&](int iterations) {
+        std::vector<float> local_posteriors(node_list[node_indexes[query]].getStates().size(), 0);
+        for (int i = 0; i < iterations; i++) {
+            std::unordered_map<std::string, std::string> sample = prior_sample();
+            // posteriors[index of state that has been sampled for this query variable]
+            local_posteriors[node_list[node_indexes[query]].getStatesMap()[sample[query]]]++;
+        }
+        return local_posteriors;
+    };
+
+    std::vector<std::future<std::vector<float>>> t_results;
+    t_results.reserve(n_thread);
+    for (int i = 0; i < n_thread; i++) {
+        if (i == 0)
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+        else
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
+    }
+
+    for (auto &res: t_results) {
+        std::vector<float> loc_posteriors = res.get();
+        for (int i = 0; i < posteriors.size(); i++)
+            posteriors[i] += loc_posteriors[i];
+    }
+
+    return Utils::normalize(posteriors);
 }
 
 
@@ -463,16 +476,21 @@ std::unordered_map<std::string, std::vector<float>> bayinf::Graph::inference(int
 
     for (auto& node : node_list) {
         try {
-            std::string query = node.getName() + "|" + evidence;
+            std::string query;
             std::vector<float> posteriors;
 
-            // if someone wants to add support for more algorithms in the future, he can just insert them here (maybe with a switch case)
-            if (algorithm == 0) {
-                posteriors = likelihood_weighting(query, num_samples);
+            if (evidence.empty()) {
+                query = node.getName();
+                posteriors = simple_sampling(query, num_samples);
             } else {
-                posteriors = rejection_sampling(query, num_samples);
+                query = node.getName() + "|" + evidence;
+                // if someone wants to add support for more algorithms in the future, he can just insert them here (maybe with a switch case)
+                if (algorithm == 0) {
+                    posteriors = likelihood_weighting(query, num_samples);
+                } else {
+                    posteriors = rejection_sampling(query, num_samples);
+                }
             }
-
             results[query] = posteriors;
         } catch (const char* msg) {
             std::cerr << "Error: " << msg;

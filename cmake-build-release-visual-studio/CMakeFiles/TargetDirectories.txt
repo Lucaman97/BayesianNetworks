@@ -1,8 +1,0 @@
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/CMakeFiles/edit_cache.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/CMakeFiles/rebuild_cache.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/bayesian_inference/CMakeFiles/bayinf.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/bayesian_inference/CMakeFiles/edit_cache.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/bayesian_inference/CMakeFiles/rebuild_cache.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/example/CMakeFiles/edit_cache.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/example/CMakeFiles/example1.dir
-C:/Users/Sax/Desktop/POLI/Programmazione_di_sistema/Progetto/BayesianNetworks/cmake-build-release-visual-studio/example/CMakeFiles/rebuild_cache.dir
