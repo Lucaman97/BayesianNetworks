@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <math.h>
+#include <algorithm>
 
 int Utils::word_count(const std::string &input) {
     int count = 1;
