@@ -24,11 +24,16 @@ int main() {
     int num_samples = 10000;
 
     // vanilla network (no evidence)
+    auto start = std::chrono::high_resolution_clock::now();
     std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples);
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+    float seconds = (float)std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()/(float)1000000;
+    std::cout << "Took " << seconds << " s\n"<<std::endl;
     bayinf::Graph::pretty_print(results);
 
     // set evidence
     std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
+    //std::string evidence = "Environment=Land";
     results = network.inference(num_samples, evidence);
     bayinf::Graph::pretty_print(results); // print results in a nice format
 
@@ -37,6 +42,8 @@ int main() {
     std::cout << "Should throw an exception:\n";
     results = network.inference(num_samples, evidence);
     bayinf::Graph::pretty_print(results);
+
+
 
     return 0;
 }

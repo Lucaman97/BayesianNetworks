@@ -1,7 +1,6 @@
 #include "bayinf/Graph.h"
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <random>
 #include <future>
 #include "tinyxml2.h"
@@ -30,64 +29,55 @@ bayinf::Graph::Graph(const std::string &filename)
             // save the states
             std::unordered_map<std::string, int> states_map;
             std::vector<std::string> states;
-            int state_counter = 0;
 
             for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
             {
                 const char* state_id;
                 state->QueryStringAttribute("id", &state_id);
-                states_map[state_id] = state_counter;
+                states_map[state_id] = (int)states.size();
                 states.emplace_back(state_id);
-                state_counter++;
             }
 
-            // save the parents
             std::vector<std::string> parents;
+            std::vector<unsigned int> parent_wstates;
             if (e->FirstChildElement("parents") != nullptr) {
                 const char* parentlist = e->FirstChildElement("parents")->GetText();
-                std::istringstream ss(parentlist);
-                std::string parent;
-                while (ss >> parent) {
+                for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
                     parents.push_back(parent);
+                    parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
                 }
+            }
+
+            // calculates parent weight (used for indexing the cpt during inference)
+            for (int i = 0; i < parent_wstates.size(); i++) {
+                unsigned int prod = 1;
+                for (int j = i+1; j < parent_wstates.size(); j++) {
+                    prod *= parent_wstates[j];
+                }
+                parent_wstates[i] = prod;
             }
 
             // save the probabilities
             if (e->FirstChildElement("probabilities") != nullptr) {
                 std::string problist = e->FirstChildElement("probabilities")->GetText();
-                int n_cols = Utils::word_count(problist)/state_counter;
-                //std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
-
-
-                std::istringstream ss(problist);
-                std::string prob;
-
-                int n_states = 0;
+                int n = 0;
+                int row_length = states.size();
+                int n_rows = Utils::word_count(problist) / row_length;
 
                 //if hash(probabilities) is not in probs_hashmap, then add it,
                 // else make the probabilities pointer point the one already existing
                 std::string hashedCPT = Node::hashFun(problist);
-
+                std::vector<std::vector<float>> probabilities(n_rows);
                 //If the hashmap does not contain the node, then:
                 if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
                 {
-                    std::vector<float> firstLayerVec;
-                    std::vector<std::vector<float>> secondLayerVec;
-                    //Node::probs_hashmap[hash.toString()].push_back(firstLayerVec);
-                    while (ss >> prob)
-                    {
-                        firstLayerVec.push_back(std::stof(prob));
-                        n_states++;
-                        if (n_states == state_counter)
-                        {
-                            secondLayerVec.emplace_back(firstLayerVec);
-                            firstLayerVec.clear();
-                            n_states = 0;
-                        }
+                    for (auto& p : Utils::split_string(problist, ' ')) {
+                        probabilities[n / row_length].push_back(std::stof(p));
+                        n++;
                     }
-                    Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(secondLayerVec);
+                    Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(probabilities);
                 }
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter, hashedCPT);
+                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, hashedCPT, parent_wstates);
                 node_list.push_back(node);
                 node_indexes[node_id] = (int)node_list.size() - 1;
             }
@@ -102,26 +92,33 @@ bayinf::Graph::Graph(const std::string &filename)
             // save the states
             std::unordered_map<std::string, int> states_map;
             std::vector<std::string> states;
-            int state_counter = 0;
 
+            // save the states
             for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
             {
                 const char* state_id;
                 state->QueryStringAttribute("id", &state_id);
-                states_map[state_id] = state_counter;
+                states_map[state_id] = (int)states.size();
                 states.emplace_back(state_id);
-                state_counter++;
             }
 
-            // save the parents
             std::vector<std::string> parents;
+            std::vector<unsigned int> parent_wstates;
             if (e->FirstChildElement("parents") != nullptr) {
                 const char* parentlist = e->FirstChildElement("parents")->GetText();
-                std::istringstream ss(parentlist);
-                std::string parent;
-                while (ss >> parent) {
+                for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
                     parents.push_back(parent);
+                    parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
                 }
+            }
+
+            // calculates parent weight (used for indexing the cpt during inference)
+            for (int i = 0; i < parent_wstates.size(); i++) {
+                unsigned int prod = 1;
+                for (int j = i+1; j < parent_wstates.size(); j++) {
+                    prod *= parent_wstates[j];
+                }
+                parent_wstates[i] = prod;
             }
 
             // save the resulting states
@@ -129,8 +126,6 @@ bayinf::Graph::Graph(const std::string &filename)
                 std::string statelist = e->FirstChildElement("resultingstates")->GetText();
                 int n_cols = Utils::word_count(statelist);
                 std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
-                std::istringstream ss(statelist);
-                std::string res_state;
                 int n_states = 0;
 
                 //if hash(probabilities) is not in probs_hashmap, then add it,
@@ -142,8 +137,7 @@ bayinf::Graph::Graph(const std::string &filename)
                 if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
                 {
                     std::vector<std::vector<float>> table;
-                    while (ss >> res_state)
-                    {
+                    for (auto& res_state : Utils::split_string(statelist, ' ')) {
                         std::vector<float> row(n_cols, 0);
                         for (int i = 0; i < states.size(); i++) {
                             if (states[i] == res_state) {
@@ -156,7 +150,7 @@ bayinf::Graph::Graph(const std::string &filename)
                     Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(table);
                 }
                 //let's create the node and let's assign to it the probabilities added in probs_hashmap.
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, state_counter, hashedCPT);
+                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, hashedCPT, parent_wstates);
                 node_list.push_back(node);
                 node_indexes[node_id] = (int)node_list.size() - 1;
 
@@ -220,16 +214,9 @@ std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
         unsigned int states_index = 0;
         if (!node.getParents().empty()) { // not a root node
             // retrieve the index to access the correct probabilities in the CPT given all the parents states (the current evidence)
-            std::vector<unsigned int> parent_nstates;
-            for (const std::string& parent : node.getParents()) {
-                parent_nstates.push_back(node_list[node_indexes[parent]].getStates().size());
-            }
+            std::vector<unsigned int> parent_weight = node.getParentWeightStates();
             for (int i = 0; i < node.getParents().size(); i++) {
-                unsigned int prod = 1;
-                for (int j = i+1; j < node.getParents().size(); j++) {
-                    prod *= parent_nstates[j];
-                }
-                states_index += node_list[node_indexes[node.getParents()[i]]].getStatesMap()[sample[node.getParents()[i]]] * prod;
+                states_index += node_list[node_indexes[node.getParents()[i]]].getStatesMap()[sample[node.getParents()[i]]] * parent_weight[i];
             }
         }
         // now, based on the evidence, I want to access the right probabilities
@@ -265,16 +252,9 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
 
         if (!node.getParents().empty()) { // not a root node
             // retrieve the index to access the correct probabilities in the CPT given all the parents states (the current evidence)
-            std::vector<unsigned int> parent_nstates;
-            for (const std::string& parent : node.getParents()) {
-                parent_nstates.push_back(node_list[node_indexes[parent]].getStates().size());
-            }
+            std::vector<unsigned int> parent_weight = node.getParentWeightStates();
             for (int i = 0; i < node.getParents().size(); i++) {
-                unsigned int prod = 1;
-                for (int j = i+1; j < node.getParents().size(); j++) {
-                    prod *= parent_nstates[j];
-                }
-                states_index += node_list[node_indexes[node.getParents()[i]]].getStatesMap()[sample[node.getParents()[i]]] * prod;
+                states_index += node_list[node_indexes[node.getParents()[i]]].getStatesMap()[sample[node.getParents()[i]]] * parent_weight[i];
             }
         }
         // now, based on the evidence, I want to access the right probabilities
@@ -429,7 +409,7 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
     }
 }
 
-std::vector<float> bayinf::Graph::simple_sampling(const std::string& query, int num_samples) {
+std::vector<float> bayinf::Graph::forward_sampling(const std::string& query, int num_samples) {
     std::vector<float> posteriors(node_list[node_indexes[query]].getStates().size(), 0);
     int n_thread = (int) std::thread::hardware_concurrency() - 1;
     int iterations = num_samples / n_thread;
@@ -481,7 +461,7 @@ std::unordered_map<std::string, std::vector<float>> bayinf::Graph::inference(int
 
             if (evidence.empty()) {
                 query = node.getName();
-                posteriors = simple_sampling(query, num_samples);
+                posteriors = forward_sampling(query, num_samples);
             } else {
                 query = node.getName() + "|" + evidence;
                 // if someone wants to add support for more algorithms in the future, he can just insert them here (maybe with a switch case)

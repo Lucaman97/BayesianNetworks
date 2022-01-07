@@ -19,7 +19,7 @@ namespace bayinf {
         explicit Graph(const std::string& filename);
         //friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
         void edit_cpt(const std::string& name, const std::string& problist); // problist is a list of probabilities separated by a space
-
+        /*
         inline void test() {
 
            if (DEBUG == 0) {// debug only
@@ -37,18 +37,16 @@ namespace bayinf {
 
 
        }
-
+        */
         void printNode(std::string name);
         inline int getMapSize(){ return Node::probs_hashmap.size();};
         inline void printMap() {
             for (auto& e : Node::probs_hashmap) {
                 std::cout<<"\nCPT count: "<<e.second.use_count()<<std::endl;
                 for (auto& row : *e.second) {
-                    std::cout<<"Row: ";
                     for (auto& el : row) {
                         std::cout << el << " ";
                     }
-                    std::cout<<std::endl;
                 }
                 std::cout << "\n";
             }
@@ -58,15 +56,16 @@ namespace bayinf {
         std::unordered_map<std::string, std::vector<float>> inference(int num_samples=1000, const std::string& evidence="", int algorithm=0);
 
         static void pretty_print(const std::unordered_map<std::string, std::vector<float>>& map);
+        std::unordered_map<std::string,std::string> prior_sample();
 
     protected:
         std::unordered_map<std::string,int> node_indexes;
     private:
-        std::unordered_map<std::string,std::string> prior_sample();
+
         std::tuple<std::unordered_map<std::string,std::string>, float> weighted_sample(const std::unordered_map<std::string, std::string>& evidence);
         std::vector<float> rejection_sampling(const std::string& query, int num_samples);
         std::vector<float> likelihood_weighting(const std::string& query, int num_samples);
-        std::vector<float> simple_sampling(const std::string &query, int num_samples);
+        std::vector<float> forward_sampling(const std::string &query, int num_samples);
         int checkQueryValidity(const std::string&);
 
         std::default_random_engine gen; // random number generator
