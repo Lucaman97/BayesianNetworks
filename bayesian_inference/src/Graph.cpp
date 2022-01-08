@@ -6,7 +6,6 @@
 #include "tinyxml2.h"
 #include "Utils.h"
 
-
 //Define the static member
 std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> Node::probs_hashmap;
 
@@ -21,139 +20,101 @@ bayinf::Graph::Graph(const std::string &filename)
 
         tinyxml2::XMLElement* root = doc.FirstChildElement("smile")->FirstChildElement("nodes" );
 
-        // iterate over all the 'cpt' xml tags
-        for (tinyxml2::XMLElement* e = root->FirstChildElement("cpt" ); e != nullptr; e = e->NextSiblingElement("cpt")) {
-            const char* node_id;
-            e->QueryStringAttribute("id", &node_id);
+        // iterate over all the 'nodes' tags
+        for (tinyxml2::XMLElement* e = root->FirstChildElement( ); e != nullptr; e = e->NextSiblingElement()) {
+            if (strcmp(e->Name(), "cpt") == 0 || strcmp(e->Name(), "deterministic") == 0) {
+                const char* node_id;
+                e->QueryStringAttribute("id", &node_id);
 
-            // save the states
-            std::unordered_map<std::string, int> states_map;
-            std::vector<std::string> states;
+                // save the states
+                std::unordered_map<std::string, int> states_map;
+                std::vector<std::string> states;
 
-            for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
-            {
-                const char* state_id;
-                state->QueryStringAttribute("id", &state_id);
-                states_map[state_id] = (int)states.size();
-                states.emplace_back(state_id);
-            }
-
-            std::vector<std::string> parents;
-            std::vector<unsigned int> parent_wstates;
-            if (e->FirstChildElement("parents") != nullptr) {
-                const char* parentlist = e->FirstChildElement("parents")->GetText();
-                for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
-                    parents.push_back(parent);
-                    parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
-                }
-            }
-
-            // calculates parent weight (used for indexing the cpt during inference)
-            for (int i = 0; i < parent_wstates.size(); i++) {
-                unsigned int prod = 1;
-                for (int j = i+1; j < parent_wstates.size(); j++) {
-                    prod *= parent_wstates[j];
-                }
-                parent_wstates[i] = prod;
-            }
-
-            // save the probabilities
-            if (e->FirstChildElement("probabilities") != nullptr) {
-                std::string problist = e->FirstChildElement("probabilities")->GetText();
-                int n = 0;
-                int row_length = states.size();
-                int n_rows = Utils::word_count(problist) / row_length;
-
-                //if hash(probabilities) is not in probs_hashmap, then add it,
-                // else make the probabilities pointer point the one already existing
-                std::string hashedCPT = Node::hashFun(problist);
-                std::vector<std::vector<float>> probabilities(n_rows);
-                //If the hashmap does not contain the node, then:
-                if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+                for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
                 {
-                    for (auto& p : Utils::split_string(problist, ' ')) {
-                        probabilities[n / row_length].push_back(std::stof(p));
-                        n++;
+                    const char* state_id;
+                    state->QueryStringAttribute("id", &state_id);
+                    states_map[state_id] = (int)states.size();
+                    states.emplace_back(state_id);
+                }
+
+                std::vector<std::string> parents;
+                std::vector<unsigned int> parent_wstates;
+                if (e->FirstChildElement("parents") != nullptr) {
+                    const char* parentlist = e->FirstChildElement("parents")->GetText();
+                    for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
+                        parents.push_back(parent);
+                        parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
                     }
-                    Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(probabilities);
                 }
-                Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, hashedCPT, parent_wstates);
-                node_list.push_back(node);
-                node_indexes[node_id] = (int)node_list.size() - 1;
-            }
 
-        }
-
-        // Iterate over all 'deterministic' tags (fix repeating code)
-        for (tinyxml2::XMLElement* e = root->FirstChildElement("deterministic" ); e != nullptr; e = e->NextSiblingElement("deterministic")) {
-            const char* node_id;
-            e->QueryStringAttribute("id", &node_id);
-
-            // save the states
-            std::unordered_map<std::string, int> states_map;
-            std::vector<std::string> states;
-
-            // save the states
-            for (tinyxml2::XMLElement* state = e->FirstChildElement("state" ); state != nullptr; state = state->NextSiblingElement("state"))
-            {
-                const char* state_id;
-                state->QueryStringAttribute("id", &state_id);
-                states_map[state_id] = (int)states.size();
-                states.emplace_back(state_id);
-            }
-
-            std::vector<std::string> parents;
-            std::vector<unsigned int> parent_wstates;
-            if (e->FirstChildElement("parents") != nullptr) {
-                const char* parentlist = e->FirstChildElement("parents")->GetText();
-                for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
-                    parents.push_back(parent);
-                    parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
+                // calculates parent weight (used for indexing the cpt during inference)
+                for (int i = 0; i < parent_wstates.size(); i++) {
+                    unsigned int prod = 1;
+                    for (int j = i+1; j < parent_wstates.size(); j++) {
+                        prod *= parent_wstates[j];
+                    }
+                    parent_wstates[i] = prod;
                 }
-            }
 
-            // calculates parent weight (used for indexing the cpt during inference)
-            for (int i = 0; i < parent_wstates.size(); i++) {
-                unsigned int prod = 1;
-                for (int j = i+1; j < parent_wstates.size(); j++) {
-                    prod *= parent_wstates[j];
-                }
-                parent_wstates[i] = prod;
-            }
+                std::string hashedCPT;
+                if (strcmp(e->Name(), "cpt") == 0) {
+                    // save the probabilities
+                    if (e->FirstChildElement("probabilities") != nullptr) {
+                        std::string problist = e->FirstChildElement("probabilities")->GetText();
+                        int n = 0;
+                        size_t row_length = states.size();
+                        size_t n_rows = Utils::word_count(problist) / row_length;
 
-            // save the resulting states
-            if (e->FirstChildElement("resultingstates") != nullptr) {
-                std::string statelist = e->FirstChildElement("resultingstates")->GetText();
-                int n_cols = Utils::word_count(statelist);
-                std::vector<std::vector<float>> probabilities(n_cols); // initialize num of rows
-                int n_states = 0;
-
-                //if hash(probabilities) is not in probs_hashmap, then add it,
-                // else make the probabilities pointer point the one already existing
-
-                std::string hashedCPT = Node::hashFun(statelist);
-
-                //If the hashmap does not contain the node, then:
-                if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
-                {
-                    std::vector<std::vector<float>> table;
-                    for (auto& res_state : Utils::split_string(statelist, ' ')) {
-                        std::vector<float> row(n_cols, 0);
-                        for (int i = 0; i < states.size(); i++) {
-                            if (states[i] == res_state) {
-                                row[i] = 1;
-                                break;
+                        //if hash(probabilities) is not in probs_hashmap, then add it,
+                        // else make the probabilities pointer point the one already existing
+                        hashedCPT = Node::hashFun(problist);
+                        std::vector<std::vector<float>> probabilities(n_rows);
+                        //If the hashmap does not contain the node, then:
+                        if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+                        {
+                            for (auto& p : Utils::split_string(problist, ' ')) {
+                                probabilities[n / row_length].push_back(std::stof(p));
+                                n++;
                             }
+                            Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(probabilities);
                         }
-                        table.push_back(row);
                     }
-                    Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(table);
+                } else if (strcmp(e->Name(), "deterministic") == 0) {
+                    // save the resulting states
+                    if (e->FirstChildElement("resultingstates") != nullptr) {
+                        std::string statelist = e->FirstChildElement("resultingstates")->GetText();
+                        int n_rows = Utils::word_count(statelist);
+                        std::vector<std::vector<float>> probabilities(n_rows); // initialize num of rows
+                        int n_states = 0;
+
+                        //if hash(probabilities) is not in probs_hashmap, then add it,
+                        // else make the probabilities pointer point the one already existing
+
+                        hashedCPT = Node::hashFun(statelist);
+
+                        //If the hashmap does not contain the node, then:
+                        if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
+                        {
+                            std::vector<std::vector<float>> table;
+                            for (auto& res_state : Utils::split_string(statelist, ' ')) {
+                                std::vector<float> row(n_rows, 0);
+                                for (int i = 0; i < states.size(); i++) {
+                                    if (states[i] == res_state) {
+                                        row[i] = 1;
+                                        break;
+                                    }
+                                }
+                                table.push_back(row);
+                            }
+                            Node::probs_hashmap[hashedCPT] = std::make_shared<std::vector<std::vector<float>>>(table);
+                        }
+                    }
                 }
                 //let's create the node and let's assign to it the probabilities added in probs_hashmap.
                 Node node(node_id, states, states_map, Node::probs_hashmap[hashedCPT], parents, hashedCPT, parent_wstates);
                 node_list.push_back(node);
                 node_indexes[node_id] = (int)node_list.size() - 1;
-
             }
         }
 

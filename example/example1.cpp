@@ -20,7 +20,7 @@
 int main() {
     std::cout<<"START Example1"<<std::endl<<"------------------------\n";
 
-    bayinf::Graph network("data/Credit.xdsl");
+    bayinf::Graph network("data/AsiaDiagnosis.xdsl");
     int num_samples = 10000;
 
     // vanilla network (no evidence)
@@ -32,8 +32,9 @@ int main() {
     bayinf::Graph::pretty_print(results);
 
     // set evidence
-    std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
+    //std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
     //std::string evidence = "Environment=Land";
+    std::string evidence = "Tuberculosis=Present";
     results = network.inference(num_samples, evidence);
     bayinf::Graph::pretty_print(results); // print results in a nice format
 
@@ -42,8 +43,6 @@ int main() {
     std::cout << "Should throw an exception:\n";
     results = network.inference(num_samples, evidence);
     bayinf::Graph::pretty_print(results);
-
-
 
     return 0;
 }
