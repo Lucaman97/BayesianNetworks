@@ -8,7 +8,7 @@
 #include <random>
 #include "../../src/Node.h"
 
-#define DEBUG 0
+
 
 namespace bayinf {
 
@@ -17,40 +17,23 @@ namespace bayinf {
 
         std::vector<Node> node_list;
         explicit Graph(const std::string& filename);
-        //friend std::ostream& operator<<(std::ostream& out, const Graph& graph);
-        void edit_cpt(const std::string& name, const std::string& problist); // problist is a list of probabilities separated by a space
-        /*
-        inline void test() {
 
-           if (DEBUG == 0) {// debug only
-               for (auto &node: node_list) {
-                   std::cout << node.getName() << "\n";
-                   for (auto &row: node.getProbabilities()) {
-                       for (auto &el: row) {
-                           std::cout << el << " ";
-                       }
-                       std::cout << "\n";
-                   }
-                   std::cout << "\n";
-               };
-           }
-
-
-       }
-        */
-        void printNode(std::string name);
+        // problist is a list of probabilities separated by a space
+        void edit_cpt(const std::string& name, const std::string& problist);
         inline int getMapSize(){ return Node::probs_hashmap.size();};
+        void printNode(const std::string& name);
         inline void printMap() {
+            std::cout<< "----------HashMap----------";
             for (auto& e : Node::probs_hashmap) {
                 std::cout<<"\nCPT count: "<<e.second.use_count()<<std::endl;
                 for (auto& row : *e.second) {
                     for (auto& el : row) {
                         std::cout << el << " ";
                     }
+                    std::cout<<std::endl;
                 }
-                std::cout << "\n";
             }
-            std::cout << "\n";
+            std::cout << "-------------------------"<<std::endl;
         }
 
         std::unordered_map<std::string, std::vector<float>> inference(int num_samples=1000, const std::string& evidence="", int algorithm=0);
@@ -58,7 +41,7 @@ namespace bayinf {
         static void pretty_print(const std::unordered_map<std::string, std::vector<float>>& map);
         std::unordered_map<std::string,std::string> prior_sample();
 
-    protected:
+
         std::unordered_map<std::string,int> node_indexes;
     private:
 

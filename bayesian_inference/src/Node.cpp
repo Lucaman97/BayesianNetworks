@@ -17,9 +17,7 @@ std::vector<std::string> Node::getStates() const {
     return states;
 }
 
-std::vector<std::vector<float>> Node::getProbabilities() const {
-    return *probabilities;
-}
+
 
 std::vector<std::string> Node::getParents() const {
     return parents;

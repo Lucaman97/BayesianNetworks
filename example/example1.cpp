@@ -12,13 +12,13 @@
  * num_samples is 1000 by default
  * evidence is empty by default, in this way I can perform inference without evidence
  * algorithm can be:
- *      0: likelihood weighting (deafult)
+ *      0: likelihood weighting (default)
  *      1: rejection sampling
  *
  */
 
 int main() {
-    std::cout<<"START"<<std::endl<<"------------------------\n";
+    std::cout<<"START Example1"<<std::endl<<"------------------------\n";
 
     bayinf::Graph network("data/Credit.xdsl");
     int num_samples = 10000;

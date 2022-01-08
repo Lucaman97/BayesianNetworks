@@ -11,10 +11,12 @@
 class Node : public COWBase<std::vector<std::vector<float>>>{
 public:
     explicit inline Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
-                  std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents, std::string hashedCPT, std::vector<unsigned int> parent_wstates)
+                  std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents,
+                  std::string hashedCPT, std::vector<unsigned int> parent_wstates)
+
             : name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
             parents(std::move(parents)), hashedCPT(std::move(hashedCPT)), parent_wstates(std::move(parent_wstates))
-            {this->probabilities=(std::move(probabilities));};
+            {this->probabilities=std::move((probabilities));};
 
 
     std::string getName() const;

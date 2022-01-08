@@ -163,26 +163,26 @@ bayinf::Graph::Graph(const std::string &filename)
     }
 }
 
-void bayinf::Graph::printNode(std::string name){
-  auto n = node_list[node_indexes[name]];
-  std::cout<<"Node name: "<< n.getName() << std::endl;
-    auto p = n.prob();
-    std::cout<<"CPT count: "<<p.use_count()<<std::endl;
-    for (auto& row : *p) {
+void bayinf::Graph::printNode(const std::string& name){
+    const auto & n = node_list[node_indexes[name]];
+    std::cout<<"----------Node: "<< n.getName() <<"----------"<< std::endl;
+    const auto p = n.value();
+    std::cout<<"CPT count: "<<n.use_count()<<std::endl;
+    for (const auto& row : p) {
         std::cout<<"Row: ";
         for (auto& el : row) {
             std::cout << el << " ";
         }
         std::cout << std::endl;
     }
-    std::cout << std::endl;
+    std::cout<<"-------------------------"<< std::endl;
 }
 
 
 void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problist) {
     for (auto& node : node_list) {
         if (node.getName() == name) {
-            int cpt_size = Utils::calc_cpt_size(node.getProbabilities());
+            int cpt_size = Utils::calc_cpt_size(*node.prob());
             if (cpt_size == Utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
                 int n = 0;
                 int row_length = node.getStates().size();
@@ -220,7 +220,8 @@ std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        std::vector<float> cond_probs = node.getProbabilities()[states_index];
+        auto f = *node.prob();
+        std::vector<float> cond_probs = f[states_index];
 
         float rand = dis(gen); // generate random number [0,1)
         for (int i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
@@ -258,7 +259,8 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        std::vector<float> cond_probs = node.getProbabilities()[states_index];
+        auto f = *node.prob();
+        std::vector<float> cond_probs = f[states_index];
         if (is_evidence) {
             w *= cond_probs[node.getStatesMap()[sample[node.getName()]]];
         } else {
@@ -483,6 +485,7 @@ std::unordered_map<std::string, std::vector<float>> bayinf::Graph::inference(int
 
 void bayinf::Graph::pretty_print(const std::unordered_map<std::string, std::vector<float>>& map) {
     for (auto& el : map) {
+
         std::cout << "P(" << el.first << ") = <";
         for (int i = 0; i < el.second.size()-1; i++)
             std::cout << el.second[i] << ",";
