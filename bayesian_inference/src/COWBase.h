@@ -13,6 +13,7 @@ public:
         return probabilities.get();
     }
 
+    //function to get the value of the shared_ptr
     T value() const {return *probabilities;}
 
 
@@ -22,7 +23,7 @@ public:
         return probabilities.use_count();
     }
 
-
+protected:
     std::shared_ptr<T> probabilities;
 };
 

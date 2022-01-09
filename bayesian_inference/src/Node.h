@@ -8,8 +8,10 @@
 #include <unordered_map>
 #include <memory>
 #include "COWBase.h"
+
 class Node : public COWBase<std::vector<std::vector<float>>>{
 public:
+    //constructor
     explicit inline Node(std::string name, std::vector<std::string> states, std::unordered_map<std::string, int> states_map,
                   std::shared_ptr<std::vector<std::vector<float>>> probabilities, std::vector<std::string> parents,
                   std::string hashedCPT, std::vector<unsigned int> parent_wstates)
@@ -18,22 +20,40 @@ public:
             parents(std::move(parents)), hashedCPT(std::move(hashedCPT)), parent_wstates(std::move(parent_wstates))
             {this->probabilities=std::move((probabilities));};
 
-
+    //returns node's name
     std::string getName() const;
+
+    //given a string it returns the sha1 hash of the string.
     static std::string hashFun(const std::string&);
+
+    //return states_map
     std::unordered_map<std::string, int> getStatesMap() const;
+
+    //return states
     std::vector<std::string> getStates() const;
-    std::vector<std::vector<float>> getProbabilities() const;
+
+    //given a key it set the probability for the node
     void setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>>& probabilities, const std::string& hashedCpt);
+
+    //returns the parents
     std::vector<std::string> getParents() const;
+
+    //return the key for the probs_hashmap
     std::string getHashedCPT() const;
-    static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
+
+
+
+    //given an hashed cpt (a key of probs_hashmap) it checks if the reference counter is equal to 1.
+    //if it is, the cpt is deleted
     static void probs_check_delete(const std::string& hashedCPT);
+
+
     std::vector<unsigned int> getParentWeightStates() const;
 
+    static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
 private:
+
     std::string name;
-    // I assume that the number of states of a node is not very large (I could use a map or only a vector, but it would be slower)
     std::unordered_map<std::string,int> states_map; // state,index
     std::vector<std::string> states;
     std::vector<std::string> parents;

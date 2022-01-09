@@ -4,12 +4,24 @@
 #include <iostream>
 #include <vector>
 
-class Utils {
-public:
-    static int word_count(const std::string& input);
-    static std::vector<std::string> split_string(const std::string& input, char delim);
-    static int calc_cpt_size(const std::vector<std::vector<float>>& cpt);
-    static std::vector<float> normalize(const std::vector<float>& posteriors);
+#include <unordered_map>
+
+//namespace for utilities
+namespace utils {
+    //given a string as input it counts the number of words (space separated strings)
+    int word_count(const std::string& input);
+
+    //given an input and a char it split the string using the char as delimiter
+    std::vector<std::string> split_string(const std::string& input, char delim);
+
+    //returns the size of a cpt
+    int calc_cpt_size(const std::vector<std::vector<float>>& cpt);
+
+
+
+
+    std::vector<float> normalize(const std::vector<float>& posteriors);
+
 };
 
 

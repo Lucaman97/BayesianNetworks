@@ -42,7 +42,7 @@ bayinf::Graph::Graph(const std::string &filename)
                 std::vector<unsigned int> parent_wstates;
                 if (e->FirstChildElement("parents") != nullptr) {
                     const char* parentlist = e->FirstChildElement("parents")->GetText();
-                    for (const std::string& parent : Utils::split_string(parentlist, ' ')) {
+                    for (const std::string& parent : utils::split_string(parentlist, ' ')) {
                         parents.push_back(parent);
                         parent_wstates.push_back(node_list[node_indexes[parent]].getStates().size());
                     }
@@ -64,7 +64,7 @@ bayinf::Graph::Graph(const std::string &filename)
                         std::string problist = e->FirstChildElement("probabilities")->GetText();
                         int n = 0;
                         size_t row_length = states.size();
-                        size_t n_rows = Utils::word_count(problist) / row_length;
+                        size_t n_rows = utils::word_count(problist) / row_length;
 
                         //if hash(probabilities) is not in probs_hashmap, then add it,
                         // else make the probabilities pointer point the one already existing
@@ -73,7 +73,7 @@ bayinf::Graph::Graph(const std::string &filename)
                         //If the hashmap does not contain the node, then:
                         if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
                         {
-                            for (auto& p : Utils::split_string(problist, ' ')) {
+                            for (auto& p : utils::split_string(problist, ' ')) {
                                 probabilities[n / row_length].push_back(std::stof(p));
                                 n++;
                             }
@@ -84,7 +84,7 @@ bayinf::Graph::Graph(const std::string &filename)
                     // save the resulting states
                     if (e->FirstChildElement("resultingstates") != nullptr) {
                         std::string statelist = e->FirstChildElement("resultingstates")->GetText();
-                        int n_rows = Utils::word_count(statelist);
+                        int n_rows = utils::word_count(statelist);
                         std::vector<std::vector<float>> probabilities(n_rows); // initialize num of rows
                         int n_states = 0;
 
@@ -97,7 +97,7 @@ bayinf::Graph::Graph(const std::string &filename)
                         if( Node::probs_hashmap.find(hashedCPT) == Node::probs_hashmap.end())
                         {
                             std::vector<std::vector<float>> table;
-                            for (auto& res_state : Utils::split_string(statelist, ' ')) {
+                            for (auto& res_state : utils::split_string(statelist, ' ')) {
                                 std::vector<float> row(n_rows, 0);
                                 for (int i = 0; i < states.size(); i++) {
                                     if (states[i] == res_state) {
@@ -127,10 +127,22 @@ bayinf::Graph::Graph(const std::string &filename)
 void bayinf::Graph::printNode(const std::string& name){
     const auto & n = node_list[node_indexes[name]];
     std::cout<<"----------Node: "<< n.getName() <<"----------"<< std::endl;
-    const auto p = n.value();
+    std::cout<<"Parents: ";
+
+    for(auto& par : n.getParents()) std::cout<<par<<" ";
+    std::cout<<std::endl;
+
+    std::cout<<"States: ";
+    for(auto& st : n.getStates()) std::cout<<st<<" ";
+    std::cout<<std::endl;
+
+    std::cout<<"Hashed CPT: "<<n.getHashedCPT()<<std::endl;
+
+
     std::cout<<"CPT count: "<<n.use_count()<<std::endl;
-    for (const auto& row : p) {
-        std::cout<<"Row: ";
+    std::cout<<"CPT:";
+    for (const auto& row : n.value()) {
+        std::cout<<std::endl;
         for (auto& el : row) {
             std::cout << el << " ";
         }
@@ -143,13 +155,13 @@ void bayinf::Graph::printNode(const std::string& name){
 void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problist) {
     for (auto& node : node_list) {
         if (node.getName() == name) {
-            int cpt_size = Utils::calc_cpt_size(*node.prob());
-            if (cpt_size == Utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
+            int cpt_size = utils::calc_cpt_size(*node.prob());
+            if (cpt_size == utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
                 int n = 0;
                 int row_length = node.getStates().size();
                 int n_rows = cpt_size / row_length;
                 std::vector<std::vector<float>> probabilities(n_rows);
-                for (auto& p : Utils::split_string(problist, ' ')) {
+                for (auto& p : utils::split_string(problist, ' ')) {
                     probabilities[n / row_length].push_back(std::stof(p));
                     n++;
                 }
@@ -165,7 +177,6 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
         }
     }
 }
-
 
 std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
     std::uniform_real_distribution<double> dis(0,1);
@@ -240,7 +251,7 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
 
 std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, int num_samples) {
     int exc=0;
-    std::vector<std::string> tokens = Utils::split_string(query, '|');
+    std::vector<std::string> tokens = utils::split_string(query, '|');
     std::string query_variable = tokens[0];
     if (checkQueryValidity(query_variable) == 1)
     {
@@ -248,9 +259,9 @@ std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, i
         throw "Invalid query name.\n";
     }
     else {
-        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
+        std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
         for (const std::string& evidence: evidence_variables)
-            if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
+            if (checkQueryValidity(utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
         if (exc == 1) {
             //std::cerr << "Invalid evidence name.\n";
@@ -261,7 +272,7 @@ std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, i
             std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
 
             for (const std::string &ev: evidence_variables) {
-                std::vector<std::string> tok = Utils::split_string(ev, '=');
+                std::vector<std::string> tok = utils::split_string(ev, '=');
                 evidence_states[tok[0]] = tok[1];
             }
 
@@ -304,14 +315,14 @@ std::vector<float> bayinf::Graph::rejection_sampling(const std::string& query, i
                     posteriors[i] += loc_posteriors[i];
             }
 
-            return Utils::normalize(posteriors);
+            return utils::normalize(posteriors);
         }
     }
 }
 
 std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query, int num_samples) {
     int exc = 0;
-    std::vector<std::string> tokens = Utils::split_string(query, '|');
+    std::vector<std::string> tokens = utils::split_string(query, '|');
     std::string query_variable = tokens[0];
     if (checkQueryValidity(query_variable) == 1)
     {
@@ -319,10 +330,10 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
         throw "Invalid query name.\n";
     }
     else {
-        std::vector<std::string> evidence_variables = Utils::split_string(tokens[1], ',');
+        std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
 
         for (const std::string& evidence: evidence_variables)
-            if (checkQueryValidity(Utils::split_string(evidence, '=')[0]) == 1) exc = 1;
+            if (checkQueryValidity(utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
         if (exc == 1) {
             //std::cerr << "Invalid evidence name.\n";
@@ -332,7 +343,7 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
             std::vector<float> posteriors(node_list[node_indexes[query_variable]].getStates().size(), 0);
 
             for (const std::string &ev: evidence_variables) {
-                std::vector<std::string> tok = Utils::split_string(ev, '=');
+                std::vector<std::string> tok = utils::split_string(ev, '=');
                 evidence_states[tok[0]] = tok[1];
             }
 
@@ -367,7 +378,7 @@ std::vector<float> bayinf::Graph::likelihood_weighting(const std::string& query,
                     posteriors[i] += loc_posteriors[i];
             }
 
-            return Utils::normalize(posteriors);
+            return utils::normalize(posteriors);
         }
     }
 }
@@ -403,9 +414,8 @@ std::vector<float> bayinf::Graph::forward_sampling(const std::string& query, int
             posteriors[i] += loc_posteriors[i];
     }
 
-    return Utils::normalize(posteriors);
+    return utils::normalize(posteriors);
 }
-
 
 int bayinf::Graph::checkQueryValidity(const std::string& s){
     for(auto &v : node_list){
@@ -454,3 +464,16 @@ void bayinf::Graph::pretty_print(const std::unordered_map<std::string, std::vect
     }
     std::cout << "\n";
 };
+
+void bayinf::Graph::pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, std::string query){
+    std::cout << "P(" << query<< ") = <";
+    int count=0;
+    for (auto it = results[query].begin(); it != results[query].end(); it++){
+        if(count != results[query].size()-1)
+            std::cout << *it << ",";
+        else std::cout <<*it;
+        count++;
+    }
+    std::cout << ">"<<std::endl;
+}
+
