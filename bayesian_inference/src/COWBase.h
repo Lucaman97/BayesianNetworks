@@ -16,7 +16,6 @@ public:
     //function to get the value of the shared_ptr
     T value() const {return *m_ptr;}
 
-
     // returns count of the shared_ptr instance
     long use_count() const
     {
