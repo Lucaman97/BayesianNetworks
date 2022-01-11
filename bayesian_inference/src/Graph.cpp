@@ -155,7 +155,7 @@ void baynet::Graph::print_node(const std::string& name){
 void baynet::Graph::edit_cpt(const std::string &name, const std::string &problist) {
     for (auto& node : node_list) {
         if (node.get_name() == name) {
-            int cpt_size = utils::calc_cpt_size(*node.prob());
+            int cpt_size = utils::calc_cpt_size(*node.raw());
             if (cpt_size == utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
                 int n = 0;
                 int row_length = node.get_states().size();
@@ -192,7 +192,7 @@ std::unordered_map<std::string,std::string> baynet::Graph::prior_sample() {
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        auto f = *node.prob();
+        auto f = *node.raw();
         std::vector<float> cond_probs = f[states_index];
 
         float rand = dis(gen); // generate random number [0,1)
@@ -231,7 +231,7 @@ std::tuple<std::unordered_map<std::string,std::string>, float> baynet::Graph::we
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        auto f = *node.prob();
+        auto f = *node.raw();
         std::vector<float> cond_probs = f[states_index];
         if (is_evidence) {
             w *= cond_probs[node.get_states_map()[sample[node.get_name()]]];

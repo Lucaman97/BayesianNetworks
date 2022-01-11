@@ -31,7 +31,7 @@ std::string Node::hash_fun(const std::string& h) {
 }
 
 void Node::set_probabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCpt) {
-    this->probabilities = probabilities;
+    this->m_ptr = probabilities;
     this->hashedCPT = hashedCpt; // the new hash
     //    std::cout<<"Number of pointers: "<<probabilities.use_count()<<std::endl;
 }

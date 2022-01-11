@@ -18,7 +18,7 @@ public:
 
             : name(std::move(name)), states(std::move(states)), states_map(std::move(states_map)),
             parents(std::move(parents)), hashedCPT(std::move(hashedCPT)), parent_wstates(std::move(parent_wstates))
-            {this->probabilities=std::move((probabilities));};
+            {this->m_ptr=std::move((probabilities));};
 
     //returns node's name
     std::string get_name() const;

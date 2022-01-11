@@ -8,23 +8,23 @@ class COWBase
 public:
 
     // function to get the internal raw ptr
-    T* prob()
+    T* raw()
     {
-        return probabilities.get();
+        return m_ptr.get();
     }
 
     //function to get the value of the shared_ptr
-    T value() const {return *probabilities;}
+    T value() const {return *m_ptr;}
 
 
     // returns count of the shared_ptr instance
     long use_count() const
     {
-        return probabilities.use_count();
+        return m_ptr.use_count();
     }
 
 protected:
-    std::shared_ptr<T> probabilities;
+    std::shared_ptr<T> m_ptr;
 };
 
 #endif //BAYESIANNETWORKS_COWBASE_H
