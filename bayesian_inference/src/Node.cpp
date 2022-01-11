@@ -5,33 +5,33 @@
 #include <sha1.h>
 #include "Node.h"
 
-std::string Node::getName() const {
+std::string Node::get_name() const {
     return name;
 }
 
-std::unordered_map<std::string, int> Node::getStatesMap() const {
+std::unordered_map<std::string, int> Node::get_states_map() const {
     return states_map;
 }
 
-std::vector<std::string> Node::getStates() const {
+std::vector<std::string> Node::get_states() const {
     return states;
 }
 
 
 
-std::vector<std::string> Node::getParents() const {
+std::vector<std::string> Node::get_parents() const {
     return parents;
 }
 
-std::string Node::hashFun(const std::string& raw) {
+std::string Node::hash_fun(const std::string& h) {
 
     Chocobo1::SHA1 hash;
-    hash.addData(raw.c_str(), raw.size()).finalize();
+    hash.addData(h.c_str(), h.size()).finalize();
     return hash.toString();
 }
 
-void Node::setProbabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCpt) {
-    this->probabilities = probabilities;
+void Node::set_probabilities(const std::shared_ptr<std::vector<std::vector<float>>> &probabilities, const std::string& hashedCpt) {
+    this->m_ptr = probabilities;
     this->hashedCPT = hashedCpt; // the new hash
     //    std::cout<<"Number of pointers: "<<probabilities.use_count()<<std::endl;
 }
@@ -43,11 +43,11 @@ void Node::probs_check_delete(const std::string& hashedCPT) {
     }
 }
 
-std::string Node::getHashedCPT() const {
+std::string Node::get_hashed_cpt() const {
     return hashedCPT;
 }
 
-std::vector<unsigned int> Node::getParentWeightStates() const {
+std::vector<unsigned int> Node::get_parent_weight_states() const {
     return parent_wstates;
 }
 

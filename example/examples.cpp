@@ -21,7 +21,7 @@
 void example1() {
     std::cout<<"START Example1"<<std::endl<<"------------------------\n";
 
-    bayinf::Graph network("data/AsiaDiagnosis.xdsl");
+    baynet::Graph network("data/AsiaDiagnosis.xdsl");
     int num_samples = 10000;
 
     // vanilla network (no evidence)
@@ -30,34 +30,34 @@ void example1() {
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     float seconds = (float)std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()/(float)1000000;
     std::cout << "Took " << seconds << " s\n"<<std::endl;
-    bayinf::Graph::pretty_print(results);
+    baynet::Graph::pretty_print(results);
 
     // set evidence
     //std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
     //std::string evidence = "Environment=Land";
     std::string evidence = "Tuberculosis=Present";
     results = network.inference(num_samples, evidence);
-    bayinf::Graph::pretty_print(results); // print results in a nice format
+    baynet::Graph::pretty_print(results); // print results in a nice format
 
     // now with bad formatted evidences
     evidence = "CreditWooorthiness=Negative,Assets=wealthy";
     std::cout << "Should throw an exception:\n";
     results = network.inference(num_samples, evidence);
-    bayinf::Graph::pretty_print(results);
+    baynet::Graph::pretty_print(results);
 
 }
 
 void example2() {
     std::cout<<"START Example2"<<std::endl<<"------------------------"<<std::endl;
     std::cout<<"Graph modification test"<<std::endl;
-    bayinf::Graph network("data/Credit.xdsl");
+    baynet::Graph network("data/Credit.xdsl");
 
 
     std::cout<<"\n\n------------------------"<<std::endl;
     std::cout<< "BEFORE MODIFICATION:"<<std::endl;
-    //std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-    network.printNode("Income");
-    auto backup1 = network.node_list[network.node_indexes["Income"]].getHashedCPT();
+    //std::cout<<"Map dimension: "<<network.get_map_size()<<std::endl;
+    network.print_node("Income");
+    auto backup1 = network.node_list[network.node_indexes["Income"]].get_hashed_cpt();
 
     system("pause");
     std::cout<<"\n\nNow let's try to edit a cpt."<<std::endl;
@@ -66,15 +66,15 @@ void example2() {
     network.edit_cpt("Income", "0.5 0.42 0.08");
     std::cout << "Modified Income: 0.5, 0.42, 0.08"<<std::endl;
     std::cout <<"\nOld cpt count: "<<Node::probs_hashmap[backup1].use_count();
-    backup1 = network.node_list[network.node_indexes["Income"]].getHashedCPT();
+    backup1 = network.node_list[network.node_indexes["Income"]].get_hashed_cpt();
 
 
     std::cout<< "\nAFTER MODIFICATION:"<<std::endl;
 
 
 
-    //std::cout<<"Map dimension: "<<network.getMapSize()<<std::endl;
-    network.printNode("Income");
+    //std::cout<<"Map dimension: "<<network.get_map_size()<<std::endl;
+    network.print_node("Income");
 
     system("pause");
     std::cout<<"\n\nnow let's try to edit a cpt again:"<<std::endl;
@@ -84,7 +84,7 @@ void example2() {
 
     std::cout<< "\nAFTER SECOND MODIFICATION:"<<std::endl;
 
-    network.printNode("Income");
+    network.print_node("Income");
 
 
 }
@@ -92,7 +92,7 @@ void example2() {
 void example3(){
     std::cout<<"START Example3"<<std::endl<<"------------------------\n";
     std::cout<<"Test with 'deterministic' tags"<<std::endl;
-    bayinf::Graph network("data/Coma.xdsl");
+    baynet::Graph network("data/Coma.xdsl");
     int num_samples = 10000;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -100,7 +100,7 @@ void example3(){
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     float seconds = (float)std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()/(float)1000000;
     std::cout << "Took " << seconds << " s\n"<<std::endl;
-    bayinf::Graph::pretty_print(results);
+    baynet::Graph::pretty_print(results);
 
 
 }
@@ -109,7 +109,7 @@ void example3(){
 void example4() {
     std::cout<<"START Example1"<<std::endl<<"------------------------\n";
 
-    bayinf::Graph network("data/AsiaDiagnosis.xdsl");
+    baynet::Graph network("data/AsiaDiagnosis.xdsl");
     int num_samples = 10000;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -117,17 +117,17 @@ void example4() {
 
     // set query
 
-    /*
+
     std::string query = "VisitToAsia|Tuberculosis=Present";
     auto evidence = utils::split_string(query, '|')[1];
     results = network.inference(num_samples, evidence);
-    bayinf::Graph::pretty_print_query(results, query);*/
+    baynet::Graph::pretty_print_query(results, query);
 
 
     std::cout<<"\n\nPrint a Node: "<<std::endl;
-    network.printNode("VisitToAsia");
+    network.print_node("VisitToAsia");
 
     std::cout<<"\n\nPrint the hashmap: "<<std::endl;
-    network.printMap();
+    network.print_map();
 
 }

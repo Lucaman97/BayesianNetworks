@@ -8,8 +8,11 @@
 #include <random>
 #include "../../src/Node.h"
 
-
-namespace bayinf {
+namespace baynet {
+    /*
+     * Class that models the graph of a Bayesian network.
+     * The construction of the object takes place by indicating an .xdsl file as input
+     */
 
     class Graph {
     public:
@@ -21,14 +24,14 @@ namespace bayinf {
         void edit_cpt(const std::string& name, const std::string& problist);
 
         //return the probs_hashmap size
-        size_t getMapSize();
+        size_t get_map_size();
 
         //given the name of the node, it prints:
         //name, parents, states, hashed cpt, cpt counter of that node
-        void printNode(const std::string& name);
+        void print_node(const std::string& name);
 
         //prints the whole probs_hashmap
-        void printMap();
+        void print_map();
 
         //given a number of samples and an evidence it performs inference using one of the implemented algorithms.
         //you can choose which algorithm to use with an integer:
@@ -43,6 +46,7 @@ namespace bayinf {
         //function to print the probabilities of a single node given the evidence: query = posterior|evidence
         //best to use with Graph::inference
         static void pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, const std::string& query);
+
 
         // list of all the network nodes in topological order
         std::vector<Node> node_list;
@@ -63,6 +67,7 @@ namespace bayinf {
          *  Returns a map where the key is the variable name, and the value is the sampled state of the variable
          */
         std::unordered_map<std::string,std::string> prior_sample();
+
 
         /*
          *  Generates a sample from the network.
@@ -87,7 +92,7 @@ namespace bayinf {
         // Estimates prior probability of each variable in the network (so without any evidence set) by generating num_samples events
         std::vector<float> forward_sampling(const std::string &query, int num_samples);
 
-        int checkQueryValidity(const std::string&);
+        int check_query_validity(const std::string& s);
 
         std::default_random_engine gen; // random number generator
     };
