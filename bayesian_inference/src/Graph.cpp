@@ -4,7 +4,7 @@
 #include <random>
 #include <future>
 #include "tinyxml2.h"
-#include "Utils.h"
+#include "Utils.hpp"
 
 //Define the static member
 std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> Node::probs_hashmap;
@@ -155,11 +155,11 @@ void bayinf::Graph::printNode(const std::string& name){
 void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problist) {
     for (auto& node : node_list) {
         if (node.getName() == name) {
-            int cpt_size = utils::calc_cpt_size(*node.prob());
+            size_t cpt_size = utils::calc_cpt_size(*node.prob());
             if (cpt_size == utils::word_count(problist)) { // the size of the probability list must be the same as the cpt size
                 int n = 0;
-                int row_length = node.getStates().size();
-                int n_rows = cpt_size / row_length;
+                size_t row_length = node.getStates().size();
+                size_t n_rows = cpt_size / row_length;
                 std::vector<std::vector<float>> probabilities(n_rows);
                 for (auto& p : utils::split_string(problist, ' ')) {
                     probabilities[n / row_length].push_back(std::stof(p));
@@ -178,8 +178,20 @@ void bayinf::Graph::edit_cpt(const std::string &name, const std::string &problis
     }
 }
 
+std::string bayinf::Graph::generate_sample(const std::vector<float>& cond_probs, const std::vector<std::string>& states) {
+    int i;
+    std::uniform_real_distribution<float> dis(0,1);
+    float rand = dis(gen); // generate random number [0,1)
+    for (i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
+        if (rand < cond_probs[i]) {
+            break;
+        }
+        rand -= cond_probs[i];
+    }
+    return states[i];
+}
+
 std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
-    std::uniform_real_distribution<double> dis(0,1);
     std::unordered_map<std::string,std::string> sample;
 
     for (auto& node : node_list) {
@@ -192,23 +204,16 @@ std::unordered_map<std::string,std::string> bayinf::Graph::prior_sample() {
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        auto f = *node.prob();
-        std::vector<float> cond_probs = f[states_index];
+        auto cpt = node.value();
+        std::vector<float> cond_probs = cpt[states_index];
 
-        float rand = dis(gen); // generate random number [0,1)
-        for (int i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
-            if (rand < cond_probs[i]) {
-                sample[node.getName()] = node.getStates()[i]; // sample state from the distribution of the node
-                break;
-            }
-            rand -= cond_probs[i];
-        }
+        sample[node.getName()] = generate_sample(cond_probs, node.getStates()); // sample state from the distribution of the node
     }
     return sample;
 }
 
 std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::weighted_sample(const std::unordered_map<std::string, std::string>& evidence) {
-    std::uniform_real_distribution<double> dis(0,1);
+    std::uniform_real_distribution<float> dis(0,1);
     std::unordered_map<std::string,std::string> sample;
     float w = 1;
     for (auto& node : node_list) {
@@ -231,19 +236,12 @@ std::tuple<std::unordered_map<std::string,std::string>, float> bayinf::Graph::we
             }
         }
         // now, based on the evidence, I want to access the right probabilities
-        auto f = *node.prob();
-        std::vector<float> cond_probs = f[states_index];
+        auto cpt = node.value();
+        std::vector<float> cond_probs = cpt[states_index];
         if (is_evidence) {
             w *= cond_probs[node.getStatesMap()[sample[node.getName()]]];
         } else {
-            float rand = dis(gen); // generate random number [0,1)
-            for (int i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
-                if (rand < cond_probs[i]) {
-                    sample[node.getName()] = node.getStates()[i]; // sample state from the distribution of the node
-                    break;
-                }
-                rand -= cond_probs[i];
-            }
+            sample[node.getName()] = generate_sample(cond_probs, node.getStates()); // sample state from the distribution of the node
         }
     }
     return std::make_tuple(sample, w);
@@ -465,7 +463,7 @@ void bayinf::Graph::pretty_print(const std::unordered_map<std::string, std::vect
     std::cout << "\n";
 };
 
-void bayinf::Graph::pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, std::string query){
+void bayinf::Graph::pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, const std::string& query){
     std::cout << "P(" << query<< ") = <";
     int count=0;
     for (auto it = results[query].begin(); it != results[query].end(); it++){
@@ -475,5 +473,23 @@ void bayinf::Graph::pretty_print_query(std::unordered_map<std::string, std::vect
         count++;
     }
     std::cout << ">"<<std::endl;
+}
+
+void bayinf::Graph::printMap() {
+    std::cout<< "----------HashMap----------";
+    for (auto& e : Node::probs_hashmap) {
+        std::cout<<"\nCPT count: "<<e.second.use_count()<<std::endl;
+        for (auto& row : *e.second) {
+            for (auto& el : row) {
+                std::cout << el << " ";
+            }
+            std::cout<<std::endl;
+        }
+    }
+    std::cout << "-------------------------"<<std::endl;
+}
+
+size_t bayinf::Graph::getMapSize() {
+    return Node::probs_hashmap.size();
 }
 

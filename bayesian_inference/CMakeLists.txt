@@ -8,7 +8,7 @@ project(bayinf)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(bayinf STATIC src/Graph.cpp src/Node.cpp extern/tinyxml2/tinyxml2.cpp src/Utils.cpp)
+add_library(bayinf STATIC src/Graph.cpp src/Node.cpp extern/tinyxml2/tinyxml2.cpp src/Utils.hpp src/Utils.cpp)
 
 target_include_directories(bayinf PUBLIC include extern/tinyxml2 extern/hashLibrary)
 

@@ -26,7 +26,7 @@ public:
     //given a string it returns the sha1 hash of the string.
     static std::string hashFun(const std::string&);
 
-    //return states_map
+    //return states_map, a map where the key is the name of the state, and the value is the index of the state (used for indexing the cpt)
     std::unordered_map<std::string, int> getStatesMap() const;
 
     //return states
@@ -42,23 +42,23 @@ public:
     std::string getHashedCPT() const;
 
 
-
     //given an hashed cpt (a key of probs_hashmap) it checks if the reference counter is equal to 1.
     //if it is, the cpt is deleted
     static void probs_check_delete(const std::string& hashedCPT);
 
-
+    // vector that contains the product of the number of states of the next parents, for each parent (used for indexing the cpt)
     std::vector<unsigned int> getParentWeightStates() const;
 
+    // map that contains the unique CPTs, used for CoW
+    // key is the hashed string of probabilities, value is a shared_ptr to the CPT
     static std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> probs_hashmap;
 private:
-
-    std::string name;
+    std::string name; // name of the node
     std::unordered_map<std::string,int> states_map; // state,index
-    std::vector<std::string> states;
-    std::vector<std::string> parents;
-    std::string hashedCPT;
-    std::vector<unsigned int> parent_wstates; // useful for sampling
+    std::vector<std::string> states; // list of the node's states
+    std::vector<std::string> parents; // list of the node's parents
+    std::string hashedCPT; // key of the probs_hashmap corresponding to this node's cpt
+    std::vector<unsigned int> parent_wstates; // used for indexing the cpt
 };
 
 

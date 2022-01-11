@@ -3,7 +3,7 @@
 #include <string>
 #include <chrono>
 #include <vector>
-#include "../src/Utils.h"
+#include "../src/Utils.hpp"
 
 /*
  * HOW TO USE
@@ -117,11 +117,11 @@ void example4() {
 
     // set query
 
-
+    /*
     std::string query = "VisitToAsia|Tuberculosis=Present";
     auto evidence = utils::split_string(query, '|')[1];
     results = network.inference(num_samples, evidence);
-    bayinf::Graph::pretty_print_query(results, query);
+    bayinf::Graph::pretty_print_query(results, query);*/
 
 
     std::cout<<"\n\nPrint a Node: "<<std::endl;
