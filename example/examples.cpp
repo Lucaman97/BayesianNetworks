@@ -5,23 +5,11 @@
 #include <vector>
 #include "../src/Utils.hpp"
 
-/*
- * HOW TO USE
- *
- * To perform inference use -> network.inference(num_samples,evidence,algorithm)
- *
- * num_samples is 1000 by default
- * evidence is empty by default, in this way I can perform inference without evidence
- * algorithm can be:
- *      0: likelihood weighting (default)
- *      1: rejection sampling
- *
- */
 
 void example1() {
     std::cout<<"START Example1"<<std::endl<<"------------------------\n";
 
-    baynet::Graph network("data/AsiaDiagnosis.xdsl");
+    baynet::Graph network("data/Credit.xdsl");
     int num_samples = 10000;
 
     // vanilla network (no evidence)
@@ -33,9 +21,7 @@ void example1() {
     baynet::Graph::pretty_print(results);
 
     // set evidence
-    //std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
-    //std::string evidence = "Environment=Land";
-    std::string evidence = "Tuberculosis=Present";
+    std::string evidence = "CreditWorthiness=Negative,Assets=wealthy";
     results = network.inference(num_samples, evidence);
     baynet::Graph::pretty_print(results); // print results in a nice format
 
@@ -112,15 +98,10 @@ void example4() {
     baynet::Graph network("data/AsiaDiagnosis.xdsl");
     int num_samples = 10000;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples);
-
     // set query
-
-
     std::string query = "VisitToAsia|Tuberculosis=Present";
     auto evidence = utils::split_string(query, '|')[1];
-    results = network.inference(num_samples, evidence);
+    std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples, evidence);
     baynet::Graph::pretty_print_query(results, query);
 
 
@@ -129,5 +110,25 @@ void example4() {
 
     std::cout<<"\n\nPrint the hashmap: "<<std::endl;
     network.print_map();
+
+}
+
+/*
+ * Perform inference on a single node
+ */
+void example5() {
+    std::cout<<"START Example5"<<std::endl<<"------------------------\n";
+
+    baynet::Graph network("data/Credit.xdsl");
+    int num_samples = 10000;
+
+    std::string query = "Worth|CreditWorthiness=Negative,Assets=wealthy";
+
+    std::vector<float> results = network.single_node_inference(query, num_samples);
+
+    std::cout << "P(" << query << ") = <";
+    for (int i = 0; i < results.size()-1; i++)
+        std::cout << results[i] << ",";
+    std::cout << results[results.size()-1] << ">;\n";
 
 }

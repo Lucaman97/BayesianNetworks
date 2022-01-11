@@ -180,16 +180,15 @@ void baynet::Graph::edit_cpt(const std::string &name, const std::string &problis
 
 
 std::string baynet::Graph::generate_sample(const std::vector<float>& cond_probs, const std::vector<std::string>& states) {
-    int i;
     std::uniform_real_distribution<float> dis(0,1);
     float rand = dis(gen); // generate random number [0,1)
-    for (i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
+    for (int i = 0; i < cond_probs.size(); i++) { // I know that I have a probability for each state
         if (rand < cond_probs[i]) {
-            break;
+            return states[i];
         }
         rand -= cond_probs[i];
     }
-    return states[i];
+    return {};
 }
 
 
@@ -459,7 +458,6 @@ std::unordered_map<std::string, std::vector<float>> baynet::Graph::inference(int
 
 void baynet::Graph::pretty_print(const std::unordered_map<std::string, std::vector<float>>& map) {
     for (auto& el : map) {
-
         std::cout << "P(" << el.first << ") = <";
         for (int i = 0; i < el.second.size()-1; i++)
             std::cout << el.second[i] << ",";
@@ -497,5 +495,19 @@ void baynet::Graph::print_map() {
 
 size_t baynet::Graph::get_map_size() {
     return Node::probs_hashmap.size();
+}
+
+std::vector<float> baynet::Graph::single_node_inference(const std::string &query, int num_samples, int algorithm) {
+    std::vector<float> posteriors;
+    try {
+        if (algorithm == 0) {
+            posteriors = likelihood_weighting(query, num_samples);
+        } else {
+            posteriors = rejection_sampling(query, num_samples);
+        }
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+    return posteriors;
 }
 

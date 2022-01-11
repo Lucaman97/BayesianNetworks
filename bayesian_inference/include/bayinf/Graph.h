@@ -33,17 +33,25 @@ namespace baynet {
         //prints the whole probs_hashmap
         void print_map();
 
-        //given a number of samples and an evidence it performs inference using one of the implemented algorithms.
-        //you can choose which algorithm to use with an integer:
+        // given a number of samples and an evidence it performs inference using one of the implemented algorithms.
+        // evidence is in the form: "Var1=StateX,Var2=StateY,..."
+        // you can choose which algorithm to use with an integer:
         //      0: likelihood weighting (default)
         //      1: rejection sampling
         std::unordered_map<std::string, std::vector<float>> inference(int num_samples=1000, const std::string& evidence="", int algorithm=0);
 
-        //function to print the probabilities of a all nodes given the evidence: query = posterior|evidence
+        // given a number of samples and an evidence it performs inference on the query variable using one of the implemented algorithms.
+        // query is in the form: "VarName|Var1=StateX,Var2=StateY,..."
+        // you can choose which algorithm to use with an integer:
+        //      0: likelihood weighting (default)
+        //      1: rejection sampling
+        std::vector<float> single_node_inference(const std::string& query, int num_samples=1000, int algorithm=0);
+
+        //function to print the probabilities of a all nodes given the evidence: posterior = query|evidence
         //best to use with Graph::inference
         static void pretty_print(const std::unordered_map<std::string, std::vector<float>>& map);
 
-        //function to print the probabilities of a single node given the evidence: query = posterior|evidence
+        //function to print the probabilities of a single node given the evidence: posterior = query|evidence
         //best to use with Graph::inference
         static void pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, const std::string& query);
 
