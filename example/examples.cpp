@@ -1,5 +1,5 @@
 #include <iostream>
-#include "bayinf/Graph.h"
+#include "baynet/Graph.h"
 #include <string>
 #include <chrono>
 #include <vector>

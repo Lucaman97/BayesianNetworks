@@ -1,4 +1,4 @@
-#include "bayinf/Graph.h"
+#include "baynet/Graph.h"
 #include <iostream>
 #include <string>
 #include <random>
