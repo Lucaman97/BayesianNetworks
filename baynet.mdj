@@ -63,7 +63,7 @@
 											"top": 38,
 											"width": 311,
 											"height": 13,
-											"text": "bayinf"
+											"text": "baynet"
 										},
 										{
 											"_type": "LabelView",
@@ -182,9 +182,9 @@
 											"font": "Arial;13;0",
 											"left": 360,
 											"top": 232,
-											"width": 73.67724609375,
+											"width": 77.3017578125,
 											"height": 13,
-											"text": "(from bayinf)"
+											"text": "(from baynet)"
 										},
 										{
 											"_type": "LabelView",
@@ -1554,7 +1554,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "bayinf",
+					"name": "baynet",
 					"ownedElements": [
 						{
 							"_type": "UMLClass",
@@ -1580,7 +1580,8 @@
 									"_parent": {
 										"$ref": "AAAAAAF+SFVUE8piGk0="
 									},
-									"name": "node_list"
+									"name": "node_list",
+									"type": ""
 								},
 								{
 									"_type": "UMLAttribute",
@@ -1588,7 +1589,8 @@
 									"_parent": {
 										"$ref": "AAAAAAF+SFVUE8piGk0="
 									},
-									"name": "node_indexes"
+									"name": "node_indexes",
+									"type": ""
 								},
 								{
 									"_type": "UMLAttribute",
@@ -1596,7 +1598,8 @@
 									"_parent": {
 										"$ref": "AAAAAAF+SFVUE8piGk0="
 									},
-									"name": "gen"
+									"name": "gen",
+									"type": ""
 								}
 							],
 							"operations": [
@@ -1877,7 +1880,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SHW29Mui+Jo="
 							},
-							"name": "m_ptr"
+							"name": "m_ptr",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -1933,7 +1937,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "probs_hashmap"
+							"name": "probs_hashmap",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1941,7 +1946,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "name"
+							"name": "name",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1949,7 +1955,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "states_map"
+							"name": "states_map",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1957,7 +1964,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "states"
+							"name": "states",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1965,7 +1973,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "parents"
+							"name": "parents",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1973,7 +1982,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "hashedCPT"
+							"name": "hashedCPT",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1981,7 +1991,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF+SJcoDMwFBsI="
 							},
-							"name": "parent_wstates"
+							"name": "parent_wstates",
+							"type": ""
 						}
 					],
 					"operations": [

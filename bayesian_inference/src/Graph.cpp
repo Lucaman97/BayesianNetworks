@@ -125,7 +125,9 @@ baynet::Graph::Graph(const std::string &filename)
 }
 
 baynet::Graph::~Graph(){
+    std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> temp;
     Node::probs_hashmap.clear();
+    std::swap(temp, Node::probs_hashmap);
 };
 void baynet::Graph::print_node(const std::string& name){
     const auto & n = node_list[node_indexes[name]];
