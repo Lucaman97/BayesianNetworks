@@ -20,6 +20,9 @@ namespace baynet {
         //constructor: it takes the file path as input
         explicit Graph(const std::string& filename);
 
+        //destructor
+        ~Graph();
+
         //given the name of the node and a probabilities list it edits an existing node' cpt
         void edit_cpt(const std::string& name, const std::string& problist);
 

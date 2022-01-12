@@ -20,6 +20,7 @@ public:
             parents(std::move(parents)), hashedCPT(std::move(hashedCPT)), parent_wstates(std::move(parent_wstates))
             {this->m_ptr=std::move((probabilities));};
 
+
     //returns node's name
     std::string get_name() const;
 

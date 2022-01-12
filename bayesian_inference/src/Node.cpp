@@ -41,6 +41,7 @@ void Node::probs_check_delete(const std::string& hashedCPT) {
         Node::probs_hashmap[hashedCPT].reset();
         Node::probs_hashmap.erase(hashedCPT);
     }
+
 }
 
 std::string Node::get_hashed_cpt() const {

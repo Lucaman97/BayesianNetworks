@@ -124,6 +124,9 @@ baynet::Graph::Graph(const std::string &filename)
     }
 }
 
+baynet::Graph::~Graph(){
+    Node::probs_hashmap.clear();
+};
 void baynet::Graph::print_node(const std::string& name){
     const auto & n = node_list[node_indexes[name]];
     std::cout << "----------Node: " << n.get_name() << "----------" << std::endl;

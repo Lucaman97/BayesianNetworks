@@ -6,11 +6,12 @@ int main(){
 
     example2();
 
-    example3();
+    //example3();
 
-    example4();
+    //example4();
 
-    example5();
+    //example5();
 
     return 0;
+
 }

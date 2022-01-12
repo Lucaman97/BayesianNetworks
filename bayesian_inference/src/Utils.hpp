@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 //namespace for utilities
 namespace utils {
