@@ -3,6 +3,7 @@
 #include <string>
 #include <random>
 #include <future>
+#include <stdexcept>
 #include "tinyxml2.h"
 #include "Utils.hpp"
 
@@ -125,10 +126,9 @@ baynet::Graph::Graph(const std::string &filename)
 }
 
 baynet::Graph::~Graph(){
-    std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<float>>>> temp;
     Node::probs_hashmap.clear();
-    std::swap(temp, Node::probs_hashmap);
 };
+
 void baynet::Graph::print_node(const std::string& name){
     const auto & n = node_list[node_indexes[name]];
     std::cout << "----------Node: " << n.get_name() << "----------" << std::endl;
@@ -257,137 +257,121 @@ std::tuple<std::unordered_map<std::string,std::string>, float> baynet::Graph::we
 }
 
 std::vector<float> baynet::Graph::rejection_sampling(const std::string& query, int num_samples) {
-    int exc=0;
     std::vector<std::string> tokens = utils::split_string(query, '|');
     std::string query_variable = tokens[0];
+    std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
+
+    // check user input
     if (check_query_validity(query_variable) == 1)
-    {
-        //std::cerr<<"Invalid query name.\n";
-        throw "Invalid query name.\n";
+        throw std::invalid_argument("Invalid query name.");
+
+    for (const std::string& evidence: evidence_variables)
+        if (check_query_validity(utils::split_string(evidence, '=')[0]) == 1)
+            throw std::invalid_argument("Invalid evidence name.");
+
+    std::unordered_map<std::string, std::string> evidence_states;
+    std::vector<float> posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
+
+    for (const std::string &ev: evidence_variables) {
+        std::vector<std::string> tok = utils::split_string(ev, '=');
+        evidence_states[tok[0]] = tok[1];
     }
-    else {
-        std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
-        for (const std::string& evidence: evidence_variables)
-            if (check_query_validity(utils::split_string(evidence, '=')[0]) == 1) exc = 1;
 
-        if (exc == 1) {
-            //std::cerr << "Invalid evidence name.\n";
-            throw "Invalid evidence name.\n";
-        } else {
+    int n_thread = (int) std::thread::hardware_concurrency() - 1;
+    int iterations = num_samples / n_thread;
+    int left = num_samples % n_thread;
 
-            std::unordered_map<std::string, std::string> evidence_states;
-            std::vector<float> posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
+    auto t_fun = [&](int iterations) {
+        std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
+        for (int i = 0; i < iterations; i++) {
+            std::unordered_map<std::string, std::string> sample = prior_sample();
 
-            for (const std::string &ev: evidence_variables) {
-                std::vector<std::string> tok = utils::split_string(ev, '=');
-                evidence_states[tok[0]] = tok[1];
+            // count only the samples that are consistent with the evidence
+            bool consistent = true;
+            for (auto &m: evidence_states) {
+                if (sample[m.first] != m.second)
+                    consistent = false;
             }
+            if (!consistent)
+                continue;
 
-            int n_thread = (int) std::thread::hardware_concurrency() - 1;
-            int iterations = num_samples / n_thread;
-            int left = num_samples % n_thread;
-
-            auto t_fun = [&](int iterations) {
-                std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
-                for (int i = 0; i < iterations; i++) {
-                    std::unordered_map<std::string, std::string> sample = prior_sample();
-
-                    // count only the samples that are consistent with the evidence
-                    bool consistent = true;
-                    for (auto &m: evidence_states) {
-                        if (sample[m.first] != m.second)
-                            consistent = false;
-                    }
-                    if (!consistent)
-                        continue;
-
-                    // posteriors[index of state that has been sampled for this query variable]
-                    local_posteriors[node_list[node_indexes[query_variable]].get_states_map()[sample[query_variable]]]++;
-                }
-                return local_posteriors;
-            };
-
-            std::vector<std::future<std::vector<float>>> t_results;
-            t_results.reserve(n_thread);
-            for (int i = 0; i < n_thread; i++) {
-                if (i == 0)
-                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
-                else
-                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
-            }
-
-            for (auto &res: t_results) {
-                std::vector<float> loc_posteriors = res.get();
-                for (int i = 0; i < posteriors.size(); i++)
-                    posteriors[i] += loc_posteriors[i];
-            }
-
-            return utils::normalize(posteriors);
+            // posteriors[index of state that has been sampled for this query variable]
+            local_posteriors[node_list[node_indexes[query_variable]].get_states_map()[sample[query_variable]]]++;
         }
+        return local_posteriors;
+    };
+
+    std::vector<std::future<std::vector<float>>> t_results;
+    t_results.reserve(n_thread);
+    for (int i = 0; i < n_thread; i++) {
+        if (i == 0)
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+        else
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
     }
+
+    for (auto &res: t_results) {
+        std::vector<float> loc_posteriors = res.get();
+        for (int i = 0; i < posteriors.size(); i++)
+            posteriors[i] += loc_posteriors[i];
+    }
+
+    return utils::normalize(posteriors);
 }
 
 std::vector<float> baynet::Graph::likelihood_weighting(const std::string& query, int num_samples) {
-    int exc = 0;
     std::vector<std::string> tokens = utils::split_string(query, '|');
     std::string query_variable = tokens[0];
+    std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
+
+    // check user input
     if (check_query_validity(query_variable) == 1)
-    {
-        //std::cerr<<"Invalid query name.\n";
-        throw "Invalid query name.\n";
+        throw std::invalid_argument("Invalid query name.");
+
+    for (const std::string& evidence: evidence_variables)
+        if (check_query_validity(utils::split_string(evidence, '=')[0]) == 1)
+            throw std::invalid_argument("Invalid evidence name.");
+
+    std::unordered_map<std::string, std::string> evidence_states;
+    std::vector<float> posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
+
+    for (const std::string &ev: evidence_variables) {
+        std::vector<std::string> tok = utils::split_string(ev, '=');
+        evidence_states[tok[0]] = tok[1];
     }
-    else {
-        std::vector<std::string> evidence_variables = utils::split_string(tokens[1], ',');
 
-        for (const std::string& evidence: evidence_variables)
-            if (check_query_validity(utils::split_string(evidence, '=')[0]) == 1) exc = 1;
+    int n_thread = (int) std::thread::hardware_concurrency() - 1;
+    int iterations = num_samples / n_thread;
+    int left = num_samples % n_thread;
 
-        if (exc == 1) {
-            //std::cerr << "Invalid evidence name.\n";
-            throw "Invalid evidence name.\n";
-        } else {
-            std::unordered_map<std::string, std::string> evidence_states;
-            std::vector<float> posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
-
-            for (const std::string &ev: evidence_variables) {
-                std::vector<std::string> tok = utils::split_string(ev, '=');
-                evidence_states[tok[0]] = tok[1];
-            }
-
-            int n_thread = (int) std::thread::hardware_concurrency() - 1;
-            int iterations = num_samples / n_thread;
-            int left = num_samples % n_thread;
-
-            auto t_fun = [&](int iterations) {
-                std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
-                for (int i = 0; i < iterations; i++) {
-                    std::tuple<std::unordered_map<std::string, std::string>, float> sample_weight = weighted_sample(
-                            evidence_states);
-                    std::unordered_map<std::string, std::string> sample = std::get<0>(sample_weight);
-                    float w = std::get<1>(sample_weight);
-                    local_posteriors[node_list[node_indexes[query_variable]].get_states_map()[sample[query_variable]]] += w;
-                }
-                return local_posteriors;
-            };
-
-            std::vector<std::future<std::vector<float>>> t_results;
-            t_results.reserve(n_thread);
-            for (int i = 0; i < n_thread; i++) {
-                if (i == 0)
-                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
-                else
-                    t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
-            }
-
-            for (auto &res: t_results) {
-                std::vector<float> loc_posteriors = res.get();
-                for (int i = 0; i < posteriors.size(); i++)
-                    posteriors[i] += loc_posteriors[i];
-            }
-
-            return utils::normalize(posteriors);
+    auto t_fun = [&](int iterations) {
+        std::vector<float> local_posteriors(node_list[node_indexes[query_variable]].get_states().size(), 0);
+        for (int i = 0; i < iterations; i++) {
+            std::tuple<std::unordered_map<std::string, std::string>, float> sample_weight = weighted_sample(
+                    evidence_states);
+            std::unordered_map<std::string, std::string> sample = std::get<0>(sample_weight);
+            float w = std::get<1>(sample_weight);
+            local_posteriors[node_list[node_indexes[query_variable]].get_states_map()[sample[query_variable]]] += w;
         }
+        return local_posteriors;
+    };
+
+    std::vector<std::future<std::vector<float>>> t_results;
+    t_results.reserve(n_thread);
+    for (int i = 0; i < n_thread; i++) {
+        if (i == 0)
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations + left));
+        else
+            t_results.emplace_back(std::async(std::launch::async, t_fun, iterations));
     }
+
+    for (auto &res: t_results) {
+        std::vector<float> loc_posteriors = res.get();
+        for (int i = 0; i < posteriors.size(); i++)
+            posteriors[i] += loc_posteriors[i];
+    }
+
+    return utils::normalize(posteriors);
 }
 
 std::vector<float> baynet::Graph::forward_sampling(const std::string& query, int num_samples) {
@@ -452,8 +436,8 @@ std::unordered_map<std::string, std::vector<float>> baynet::Graph::inference(int
                 }
             }
             results[query] = posteriors;
-        } catch (const char* msg) {
-            std::cerr << "Error: " << msg;
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Error: " << e.what() << "\n";
             break;
         }
     }
@@ -472,16 +456,11 @@ void baynet::Graph::pretty_print(const std::unordered_map<std::string, std::vect
 };
 
 
-void baynet::Graph::pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, const std::string& query){
-    std::cout << "P(" << query<< ") = <";
-    int count=0;
-    for (auto it = results[query].begin(); it != results[query].end(); it++){
-        if(count != results[query].size()-1)
-            std::cout << *it << ",";
-        else std::cout <<*it;
-        count++;
-    }
-    std::cout << ">"<<std::endl;
+void baynet::Graph::pretty_print_query(const std::vector<float>& results, const std::string& query) {
+    std::cout << "P(" << query << ") = <";
+    for (int i = 0; i < results.size()-1; i++)
+        std::cout << results[i] << ",";
+    std::cout << results[results.size()-1] << ">;\n";
 }
 
 void baynet::Graph::print_map() {

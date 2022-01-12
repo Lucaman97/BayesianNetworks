@@ -22,6 +22,8 @@ namespace baynet {
 
         //destructor
         ~Graph();
+        Graph(const Graph& other) = delete;
+        Graph& operator=(const Graph& other) = delete;
 
         //given the name of the node and a probabilities list it edits an existing node' cpt
         void edit_cpt(const std::string& name, const std::string& problist);
@@ -56,7 +58,7 @@ namespace baynet {
 
         //function to print the probabilities of a single node given the evidence: posterior = query|evidence
         //best to use with Graph::inference
-        static void pretty_print_query(std::unordered_map<std::string, std::vector<float>> results, const std::string& query);
+        static void pretty_print_query(const std::vector<float>& results, const std::string& query);
 
 
         // list of all the network nodes in topological order

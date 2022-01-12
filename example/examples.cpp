@@ -78,7 +78,7 @@ void example2() {
 void example3(){
     std::cout<<"START Example3"<<std::endl<<"------------------------\n";
     std::cout<<"Test with 'deterministic' tags"<<std::endl;
-    baynet::Graph network("data/Coma.xdsl");
+    baynet::Graph network("data/Animals.xdsl");
     int num_samples = 10000;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -88,22 +88,23 @@ void example3(){
     std::cout << "Took " << seconds << " s\n"<<std::endl;
     baynet::Graph::pretty_print(results);
 
-
+    // set evidence
+    std::string evidence = "Class=Bird";
+    results = network.inference(num_samples, evidence);
+    baynet::Graph::pretty_print(results); // print results in a nice format
 }
 
 
 void example4() {
-    std::cout<<"START Example1"<<std::endl<<"------------------------\n";
+    std::cout<<"START Example4"<<std::endl<<"------------------------\n";
 
     baynet::Graph network("data/AsiaDiagnosis.xdsl");
     int num_samples = 10000;
 
     // set query
     std::string query = "VisitToAsia|Tuberculosis=Present";
-    auto evidence = utils::split_string(query, '|')[1];
-    std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples, evidence);
+    std::vector<float> results = network.single_node_inference(query, num_samples);
     baynet::Graph::pretty_print_query(results, query);
-
 
     std::cout<<"\n\nPrint a Node: "<<std::endl;
     network.print_node("VisitToAsia");
@@ -125,10 +126,6 @@ void example5() {
     std::string query = "Worth|CreditWorthiness=Negative,Assets=wealthy";
 
     std::vector<float> results = network.single_node_inference(query, num_samples);
-
-    std::cout << "P(" << query << ") = <";
-    for (int i = 0; i < results.size()-1; i++)
-        std::cout << results[i] << ",";
-    std::cout << results[results.size()-1] << ">;\n";
+    baynet::Graph::pretty_print_query(results, query);
 
 }
