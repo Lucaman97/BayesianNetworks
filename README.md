@@ -20,6 +20,7 @@ baynet::Graph network("data/Credit.xdsl");
 ### See the initial state of the network
 To see the prior probabilities of each node, just call the inference method like this
 ```
+int num_samples = 10000;
 std::unordered_map<std::string, std::vector<float>> results = network.inference(num_samples);
 
 // use this to print the network in a nice format
